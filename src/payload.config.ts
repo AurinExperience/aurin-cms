@@ -16,6 +16,7 @@ import { Media } from './collections/Media'
 import { Projects } from './collections/Projects'
 import { Categories } from './collections/Categories'
 import { Tags } from './collections/Tags'
+import { websiteURL } from './websiteURL'
 import {
   generateProjectDescription,
   generateProjectTitle,
@@ -29,8 +30,6 @@ const allowedOrigins = [
   'https://aurin-payload-cms.vercel.app',
   'http://localhost:3000',
 ].filter((o): o is string => Boolean(o))
-
-const websiteURL = process.env.WEBSITE_URL || 'https://aurin.mx'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)

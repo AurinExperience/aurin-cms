@@ -1,3 +1,4 @@
+import { websiteURL } from '../websiteURL'
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, PayloadRequest } from 'payload'
 
 // Avisa a la web (AurinWebsite /api/revalidate) que borre su caché del CDN, para que
@@ -6,7 +7,7 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, PayloadReque
 const purgeWebsiteCache = async (req: PayloadRequest) => {
   const secret = process.env.REVALIDATE_SECRET
   if (!secret) return
-  const url = `${process.env.WEBSITE_URL || 'https://aurin.mx'}/api/revalidate`
+  const url = `${websiteURL}/api/revalidate`
   try {
     const res = await fetch(url, {
       method: 'POST',
