@@ -162,6 +162,9 @@ export default buildConfig({
           media: true,
         },
         token: process.env.BLOB_READ_WRITE_TOKEN,
+        // El navegador sube el archivo directo a Vercel Blob: una función de Vercel no acepta
+        // peticiones de más de 4.5 MB (413 FUNCTION_PAYLOAD_TOO_LARGE). Solo con sesión iniciada.
+        clientUploads: true,
         addRandomSuffix: true,
         cacheControlMaxAge: 365 * 24 * 60 * 60, // 1 año de caché
       })
