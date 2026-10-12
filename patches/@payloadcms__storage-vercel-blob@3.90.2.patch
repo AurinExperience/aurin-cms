@@ -1,0 +1,16 @@
+diff --git a/dist/getClientUploadRoute.js b/dist/getClientUploadRoute.js
+index 9b9fb7641660214d8b93f07171c7d550e3066b57..e5354922bb8a8df7338e99fc7c1ccf51a59a7fd3 100644
+--- a/dist/getClientUploadRoute.js
++++ b/dist/getClientUploadRoute.js
+@@ -34,7 +34,10 @@ export const getClientUploadRoute = ({ access = defaultAccess, cacheControlMaxAg
+                     filename,
+                     useCompositePrefixes
+                 });
+-                const allowOverwrite = await authorizeClientOverwrite({
++                // aurin-cms: nunca sobrescribir. Con un nombre repetido el navegador subía a "foto.png"
++                // mientras Payload guardaba el registro como "foto-1.png" sin ese archivo (404).
++                // Así siempre va a una carpeta única (_objectKey) con el nombre que guarda Payload.
++                const allowOverwrite = false && await authorizeClientOverwrite({
+                     collectionPrefix,
+                     collections,
+                     req,
