@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { revalidateWebsiteAfterChange, revalidateWebsiteAfterDelete } from '../hooks/revalidateWebsite'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -13,6 +14,11 @@ export const Media: CollectionConfig = {
     // Público solo para leer (la web muestra las imágenes). Subir, editar y borrar
     // usa el default de Payload: requiere sesión en el admin.
     read: () => true,
+  },
+  // Reemplazar o borrar una imagen también se refleja al instante en la web
+  hooks: {
+    afterChange: [revalidateWebsiteAfterChange],
+    afterDelete: [revalidateWebsiteAfterDelete],
   },
   fields: [
     {
