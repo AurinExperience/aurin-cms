@@ -14,6 +14,14 @@ import { Projects } from './collections/Projects'
 import { Categories } from './collections/Categories'
 import { Tags } from './collections/Tags'
 
+const allowedOrigins = [
+  process.env.NEXT_PUBLIC_SERVER_URL,
+  'https://admin.aurin.mx',
+  'https://www.admin.aurin.mx',
+  'https://aurin-payload-cms.vercel.app',
+  'http://localhost:3000',
+].filter((o): o is string => Boolean(o))
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -67,19 +75,9 @@ export default buildConfig({
     api: '/api',
   },
 
-  // CORS para evitar bloqueos - incluir todos los orígenes necesarios
-  cors: [
-    process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
-    'https://aurin-payload-cms.vercel.app',
-    'http://localhost:3000',
-  ].filter(Boolean),
-
-  // CSRF protection - debe coincidir con CORS
-  csrf: [
-    process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
-    'https://aurin-payload-cms.vercel.app',
-    'http://localhost:3000',
-  ].filter(Boolean),
+  // CORS y CSRF comparten la lista: un origen fuera de ella no puede guardar ("You are not allowed…")
+  cors: allowedOrigins,
+  csrf: allowedOrigins,
 
   plugins: [
     // Vercel Blob Storage
