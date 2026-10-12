@@ -7,6 +7,7 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { DESCRIPTION, TITLE } from '../seo/projectSeo'
+import { revalidateWebsiteAfterChange, revalidateWebsiteAfterDelete } from '../hooks/revalidateWebsite'
 import {
   BlockquoteFeature,
   BoldFeature,
@@ -434,6 +435,9 @@ export const Projects: CollectionConfig = {
     },
   ],
   hooks: {
+    // La web borra su caché al instante cuando cambia un proyecto
+    afterChange: [revalidateWebsiteAfterChange],
+    afterDelete: [revalidateWebsiteAfterDelete],
     // beforeValidate (no beforeChange): el slug es obligatorio y la validación corre antes de beforeChange
     beforeValidate: [
       async ({ data, req, originalDoc }) => {
