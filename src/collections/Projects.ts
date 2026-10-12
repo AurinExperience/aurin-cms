@@ -10,6 +10,16 @@ export const Projects: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'projectFilters', 'status', 'featured', 'updatedAt'],
     group: 'Contenido',
+    // Muestra la página real del sitio Astro junto al formulario (refleja lo guardado, no lo que se está escribiendo)
+    livePreview: {
+      url: ({ data, locale }) =>
+        `${process.env.WEBSITE_URL || 'http://localhost:4321'}${locale?.code === 'en' ? '/en' : ''}/project/${encodeURIComponent(data?.slug ?? '')}?v=${data?.updatedAt ?? ''}`,
+      breakpoints: [
+        { label: 'Móvil', name: 'mobile', width: 375, height: 667 },
+        { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
+        { label: 'Escritorio', name: 'desktop', width: 1440, height: 900 },
+      ],
+    },
   },
   access: {
     read: () => true, // Público para el sitio web
@@ -78,7 +88,7 @@ export const Projects: CollectionConfig = {
     {
       name: 'projectFilters',
       type: 'select',
-      label: 'Filtros de Categoría',
+      label: 'Categorías (filtros)',
       hasMany: true,
       options: [
         {
@@ -104,146 +114,196 @@ export const Projects: CollectionConfig = {
       ],
       admin: {
         position: 'sidebar',
-        description: 'Selecciona una o más categorías para filtrar este proyecto. Estas son diferentes a los servicios ofrecidos.',
+        description: 'Para los filtros del listado de proyectos. No confundir con los Servicios de la portada.',
       },
     },
+    // Solo cambian el layout del admin: las tabs sin `name` y los grupos sin label no alteran la forma de los datos
     {
-      name: 'website',
-      type: 'text',
-      label: 'Sitio Web del Proyecto',
-      admin: {
-        placeholder: 'https://ejemplo.com',
-      },
-    },
-    {
-      name: 'keywords',
-      type: 'array',
-      label: 'Keywords/Palabras Clave',
-      fields: [
+      type: 'tabs',
+      tabs: [
         {
-          name: 'keyword',
-          type: 'text',
-          label: 'Palabra Clave',
-          required: true,
-          localized: true,
-        },
-      ],
-    },
-    // Hero Section
-    {
-      name: 'hero',
-      type: 'group',
-      label: 'Sección Hero',
-      fields: [
-        {
-          name: 'description',
-          type: 'richText',
-          label: 'Descripción Breve',
-          required: true,
-          localized: true,
-        },
-        {
-          name: 'bannerImage',
-          type: 'upload',
-          label: 'Imagen Principal',
-          relationTo: 'media',
-          required: true,
-        },
-        {
-          name: 'services',
-          type: 'array',
-          label: 'Servicios Ofrecidos (Chips Verdes)',
-          minRows: 1,
-          maxRows: 6,
+          label: 'Portada',
+          description: 'Lo primero que se ve al abrir el proyecto, en este orden.',
           fields: [
             {
-              name: 'name',
-              type: 'text',
-              label: 'Nombre del Servicio',
-              required: true,
-              localized: true,
+              name: 'hero',
+              type: 'group',
+              label: false,
+              admin: { hideGutter: true },
+              fields: [
+                {
+                  name: 'services',
+                  type: 'array',
+                  label: 'Servicios',
+                  labels: { singular: 'Servicio', plural: 'Servicios' },
+                  minRows: 1,
+                  maxRows: 6,
+                  admin: {
+                    description: 'Chips verdes bajo el título. Lo que hicimos en este proyecto (máx. 6).',
+                  },
+                  fields: [
+                    {
+                      name: 'name',
+                      type: 'text',
+                      label: 'Nombre del Servicio',
+                      required: true,
+                      localized: true,
+                    },
+                  ],
+                },
+                {
+                  name: 'description',
+                  type: 'richText',
+                  label: 'Descripción del Proyecto',
+                  required: true,
+                  localized: true,
+                  admin: {
+                    description: 'El primer párrafo en negrita se muestra como subtítulo.',
+                  },
+                },
+                {
+                  name: 'bannerImage',
+                  type: 'upload',
+                  label: 'Imagen Principal',
+                  relationTo: 'media',
+                  required: true,
+                  admin: {
+                    description: 'Imagen grande de portada. También se usa al compartir el enlace.',
+                  },
+                },
+              ],
             },
           ],
         },
-      ],
-    },
-    // Image Gallery
-    {
-      name: 'gallery',
-      type: 'array',
-      label: 'Galería de Imágenes',
-      minRows: 1,
-      fields: [
         {
-          name: 'image',
-          type: 'upload',
-          label: 'Imagen',
-          relationTo: 'media',
-          required: true,
+          label: 'Cliente',
+          fields: [
+            {
+              name: 'client',
+              type: 'group',
+              label: false,
+              admin: { hideGutter: true },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'name',
+                      type: 'text',
+                      label: 'Nombre del Cliente',
+                      required: true,
+                    },
+                    {
+                      name: 'industry',
+                      type: 'text',
+                      label: 'Industria',
+                    },
+                  ],
+                },
+                {
+                  name: 'logo',
+                  type: 'upload',
+                  label: 'Logo del Cliente',
+                  relationTo: 'media',
+                },
+              ],
+            },
+          ],
         },
         {
-          name: 'alt',
-          type: 'text',
-          label: 'Texto Alternativo',
-          required: true,
-          localized: true,
+          label: 'Galería',
+          fields: [
+            {
+              name: 'gallery',
+              type: 'array',
+              label: 'Imágenes',
+              labels: { singular: 'Imagen', plural: 'Imágenes' },
+              minRows: 1,
+              admin: {
+                description: 'Se muestran en este orden, debajo de la descripción. Arrastra para reordenar.',
+              },
+              fields: [
+                {
+                  name: 'image',
+                  type: 'upload',
+                  label: 'Imagen',
+                  relationTo: 'media',
+                  required: true,
+                },
+                {
+                  name: 'alt',
+                  type: 'text',
+                  label: 'Texto Alternativo',
+                  required: true,
+                  localized: true,
+                  admin: {
+                    description: 'Describe la imagen para accesibilidad y Google (no "Placeholder").',
+                  },
+                },
+                {
+                  name: 'caption',
+                  type: 'text',
+                  label: 'Descripción (opcional)',
+                  localized: true,
+                  admin: { description: 'Actualmente no se muestra en la web.' },
+                },
+              ],
+            },
+          ],
         },
         {
-          name: 'caption',
-          type: 'text',
-          label: 'Descripción (opcional)',
-          localized: true,
-        },
-      ],
-    },
-    // Client Information
-    {
-      name: 'client',
-      type: 'group',
-      label: 'Información del Cliente',
-      fields: [
-        {
-          name: 'name',
-          type: 'text',
-          label: 'Nombre del Cliente',
-          required: true,
-        },
-        {
-          name: 'industry',
-          type: 'text',
-          label: 'Industria',
-        },
-        {
-          name: 'logo',
-          type: 'upload',
-          label: 'Logo del Cliente',
-          relationTo: 'media',
-        },
-      ],
-    },
-    // SEO
-    {
-      name: 'seo',
-      type: 'group',
-      label: 'SEO',
-      fields: [
-        {
-          name: 'metaTitle',
-          type: 'text',
-          label: 'Meta Título',
-          localized: true,
-        },
-        {
-          name: 'metaDescription',
-          type: 'textarea',
-          label: 'Meta Descripción',
-          localized: true,
-        },
-        {
-          name: 'ogImage',
-          type: 'upload',
-          label: 'Imagen Open Graph',
-          relationTo: 'media',
+          label: 'SEO y Extras',
+          description: 'Estos campos actualmente no se muestran en la web.',
+          fields: [
+            {
+              name: 'seo',
+              type: 'group',
+              label: 'SEO',
+              fields: [
+                {
+                  name: 'metaTitle',
+                  type: 'text',
+                  label: 'Meta Título',
+                  localized: true,
+                },
+                {
+                  name: 'metaDescription',
+                  type: 'textarea',
+                  label: 'Meta Descripción',
+                  localized: true,
+                },
+                {
+                  name: 'ogImage',
+                  type: 'upload',
+                  label: 'Imagen Open Graph',
+                  relationTo: 'media',
+                },
+              ],
+            },
+            {
+              name: 'keywords',
+              type: 'array',
+              label: 'Palabras Clave',
+              labels: { singular: 'Palabra Clave', plural: 'Palabras Clave' },
+              fields: [
+                {
+                  name: 'keyword',
+                  type: 'text',
+                  label: 'Palabra Clave',
+                  required: true,
+                  localized: true,
+                },
+              ],
+            },
+            {
+              name: 'website',
+              type: 'text',
+              label: 'Sitio Web del Proyecto',
+              admin: {
+                placeholder: 'https://ejemplo.com',
+              },
+            },
+          ],
         },
       ],
     },

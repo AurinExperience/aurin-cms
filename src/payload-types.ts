@@ -72,6 +72,7 @@ export interface Config {
     projects: Project;
     categories: Category;
     tags: Tag;
+    'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -83,6 +84,7 @@ export interface Config {
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
+    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -90,12 +92,14 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('es' | 'en') | ('es' | 'en')[];
   globals: {};
   globalsSelect: {};
   locale: 'es' | 'en';
-  user: User & {
-    collection: 'users';
+  widgets: {
+    collections: CollectionsWidget;
   };
+  user: User;
   jobs: {
     tasks: unknown;
     workflows: unknown;
@@ -132,6 +136,7 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -142,6 +147,7 @@ export interface User {
       }[]
     | null;
   password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -192,19 +198,24 @@ export interface Project {
   featured?: boolean | null;
   publishDate: string;
   /**
-   * Selecciona una o más categorías para filtrar este proyecto. Estas son diferentes a los servicios ofrecidos.
+   * Para los filtros del listado de proyectos. No confundir con los Servicios de la portada.
    */
   projectFilters?:
     | ('diseno-ux-ui' | 'desarrollo-web-movil' | 'desarrollo-branding' | 'marketing-digital' | 'pruebas-usabilidad')[]
     | null;
-  website?: string | null;
-  keywords?:
-    | {
-        keyword: string;
-        id?: string | null;
-      }[]
-    | null;
   hero: {
+    /**
+     * Chips verdes bajo el título. Lo que hicimos en este proyecto (máx. 6).
+     */
+    services?:
+      | {
+          name: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * El primer párrafo en negrita se muestra como subtítulo.
+     */
     description: {
       root: {
         type: string;
@@ -220,32 +231,45 @@ export interface Project {
       };
       [k: string]: unknown;
     };
+    /**
+     * Imagen grande de portada. También se usa al compartir el enlace.
+     */
     bannerImage: string | Media;
-    services?:
-      | {
-          name: string;
-          id?: string | null;
-        }[]
-      | null;
   };
-  gallery?:
-    | {
-        image: string | Media;
-        alt: string;
-        caption?: string | null;
-        id?: string | null;
-      }[]
-    | null;
   client: {
     name: string;
     industry?: string | null;
     logo?: (string | null) | Media;
   };
+  /**
+   * Se muestran en este orden, debajo de la descripción. Arrastra para reordenar.
+   */
+  gallery?:
+    | {
+        image: string | Media;
+        /**
+         * Describe la imagen para accesibilidad y Google (no "Placeholder").
+         */
+        alt: string;
+        /**
+         * Actualmente no se muestra en la web.
+         */
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   seo?: {
     metaTitle?: string | null;
     metaDescription?: string | null;
     ogImage?: (string | null) | Media;
   };
+  keywords?:
+    | {
+        keyword: string;
+        id?: string | null;
+      }[]
+    | null;
+  website?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -272,6 +296,23 @@ export interface Tag {
   slug: string;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv".
+ */
+export interface PayloadKv {
+  id: string;
+  key: string;
+  data:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -354,6 +395,7 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  resetPasswordRequestedAt?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:
@@ -417,24 +459,24 @@ export interface ProjectsSelect<T extends boolean = true> {
   featured?: T;
   publishDate?: T;
   projectFilters?: T;
-  website?: T;
-  keywords?:
-    | T
-    | {
-        keyword?: T;
-        id?: T;
-      };
   hero?:
     | T
     | {
-        description?: T;
-        bannerImage?: T;
         services?:
           | T
           | {
               name?: T;
               id?: T;
             };
+        description?: T;
+        bannerImage?: T;
+      };
+  client?:
+    | T
+    | {
+        name?: T;
+        industry?: T;
+        logo?: T;
       };
   gallery?:
     | T
@@ -444,13 +486,6 @@ export interface ProjectsSelect<T extends boolean = true> {
         caption?: T;
         id?: T;
       };
-  client?:
-    | T
-    | {
-        name?: T;
-        industry?: T;
-        logo?: T;
-      };
   seo?:
     | T
     | {
@@ -458,6 +493,13 @@ export interface ProjectsSelect<T extends boolean = true> {
         metaDescription?: T;
         ogImage?: T;
       };
+  keywords?:
+    | T
+    | {
+        keyword?: T;
+        id?: T;
+      };
+  website?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -482,6 +524,14 @@ export interface TagsSelect<T extends boolean = true> {
   slug?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv_select".
+ */
+export interface PayloadKvSelect<T extends boolean = true> {
+  key?: T;
+  data?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -514,6 +564,16 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
