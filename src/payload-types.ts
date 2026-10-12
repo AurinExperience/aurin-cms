@@ -214,6 +214,10 @@ export interface Project {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Imagen cuadrada (1:1), mínimo 800 × 800 px. Vacía = se recorta la imagen principal.
+   */
+  thumbnail?: (string | null) | Media;
   seo?: {
     /**
      * Ideal 50–60 caracteres. "Auto-generar" lo arma con el nombre y el servicio principal.
@@ -450,6 +454,7 @@ export interface ProjectsSelect<T extends boolean = true> {
         caption?: T;
         id?: T;
       };
+  thumbnail?: T;
   seo?:
     | T
     | {
