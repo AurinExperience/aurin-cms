@@ -1,6 +1,9 @@
 import type { CollectionConfig } from 'payload'
 import { revalidateWebsiteAfterChange, revalidateWebsiteAfterDelete } from '../hooks/revalidateWebsite'
 
+/** "foto-AbC…xyz.png": sufijo de 30 caracteres que agregaba Vercel Blob */
+export const hasRandomSuffix = (filename: string) => /-[A-Za-z0-9]{30}\.[a-z0-9]+$/i.test(filename)
+
 export const Media: CollectionConfig = {
   slug: 'media',
   labels: {
@@ -46,6 +49,14 @@ export const Media: CollectionConfig = {
         position: 'centre',
       },
     ],
-    adminThumbnail: 'thumbnail',
+    // Las subidas viejas (con sufijo aleatorio de Vercel Blob, ver payload.config.ts) guardaron
+    // tamaños con un nombre que no existe (404 = cuadro gris); para ellas se muestra el original.
+    adminThumbnail: ({ doc }) => {
+      const thumb = (doc.sizes as { thumbnail?: { url?: string } } | undefined)?.thumbnail?.url
+      const filename = String(doc.filename ?? '')
+      if (thumb && !hasRandomSuffix(filename)) return thumb
+      // `doc` es el documento crudo de la base: `url` no siempre viene guardado
+      return filename ? `/api/media/file/${encodeURIComponent(filename)}` : null
+    },
   },
 }

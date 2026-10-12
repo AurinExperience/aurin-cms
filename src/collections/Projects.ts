@@ -363,6 +363,22 @@ export const Projects: CollectionConfig = {
                 },
               ],
             },
+            {
+              type: 'collapsible',
+              label: '4 · Miniatura (tarjeta en "Historias que hablan por sí solas" y el portafolio)',
+              fields: [
+                {
+                  name: 'thumbnail',
+                  type: 'upload',
+                  label: 'Miniatura',
+                  relationTo: 'media',
+                  admin: {
+                    description:
+                      'Imagen cuadrada (1:1), mínimo 800 × 800 px. Vacía = se recorta la imagen principal.',
+                  },
+                },
+              ],
+            },
           ],
         },
         {
