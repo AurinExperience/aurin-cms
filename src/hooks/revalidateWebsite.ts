@@ -10,7 +10,9 @@ const purgeWebsiteCache = async (req: PayloadRequest) => {
   try {
     const res = await fetch(url, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${secret}` },
+      // Content-Type obligatorio: en producción Astro (checkOrigin) responde 403 a un POST sin él
+      headers: { Authorization: `Bearer ${secret}`, 'Content-Type': 'application/json' },
+      body: '{}',
       signal: AbortSignal.timeout(5000),
     })
     if (!res.ok) req.payload.logger.warn(`No se pudo refrescar la web (${url}): HTTP ${res.status}`)
