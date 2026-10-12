@@ -22,17 +22,10 @@ const serverFunction: ServerFunctionClient = async function (args) {
   })
 }
 
-const Layout = ({ children }: Args) => {
-  console.log('[ADMIN LAYOUT DEBUG] Layout rendering started')
-  console.log('[ADMIN LAYOUT DEBUG] Config:', !!config)
-  console.log('[ADMIN LAYOUT DEBUG] ImportMap:', !!importMap)
-  console.log('[ADMIN LAYOUT DEBUG] ServerFunction:', !!serverFunction)
-
-  return (
-    <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
-      {children}
-    </RootLayout>
-  )
-}
+const Layout = ({ children }: Args) => (
+  <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
+    {children}
+  </RootLayout>
+)
 
 export default Layout

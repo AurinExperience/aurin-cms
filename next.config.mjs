@@ -2,6 +2,10 @@ import { withPayload } from '@payloadcms/next/withPayload'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Este proyecto solo sirve el admin y la API: la raíz manda al admin
+  async redirects() {
+    return [{ source: '/', destination: '/admin', permanent: false }]
+  },
   experimental: {
     reactCompiler: false,
   },

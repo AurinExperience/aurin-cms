@@ -67,9 +67,9 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
-    media: Media;
     projects: Project;
+    media: Media;
+    users: User;
     categories: Category;
     tags: Tag;
     'payload-kv': PayloadKv;
@@ -79,9 +79,9 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -125,29 +125,115 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "projects".
  */
-export interface User {
+export interface Project {
   id: string;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
+  title: string;
+  /**
+   * La URL en el idioma que tienes elegido arriba a la derecha (Locale). Para la de inglés, cambia a English. Vacío = se genera del título.
+   */
+  slug: string;
+  status: 'draft' | 'published' | 'archived';
+  featured?: boolean | null;
+  publishDate: string;
+  /**
+   * Para los filtros del listado de proyectos. No confundir con los Servicios de la portada.
+   */
+  projectFilters?:
+    | ('diseno-ux-ui' | 'desarrollo-web-movil' | 'desarrollo-branding' | 'marketing-digital' | 'pruebas-usabilidad')[]
+    | null;
+  /**
+   * En la web solo se muestra el logo, junto al título.
+   */
+  client: {
+    logo?: (string | null) | Media;
+    logoSize?: ('sm' | 'md' | 'lg' | 'xl') | null;
+    /**
+     * Blanco convierte cualquier logo a blanco. Usa originales si el logo se ve bien sobre negro.
+     */
+    logoColor?: ('white' | 'original') | null;
+    name: string;
+    industry?: string | null;
+  };
+  hero: {
+    /**
+     * Chips verdes bajo el título. Lo que hicimos en este proyecto (máx. 6).
+     */
+    services?:
+      | {
+          name: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Imagen grande de portada. También se usa al compartir el enlace.
+     */
+    bannerImage: string | Media;
+    /**
+     * La imagen se recorta para llenar el alto; en celular y tablet escala en proporción.
+     */
+    bannerHeight?: ('sm' | 'md' | 'lg' | 'xl') | null;
+    /**
+     * Usa "Encabezado 2" para el título grande (con dos encabezados seguidos, el primero sale resaltado). Todo lo demás va debajo, en párrafos, listas o citas.
+     */
+    description: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+  };
+  /**
+   * En celular se ajusta para no salirse de la pantalla.
+   */
+  galleryHeight?: ('sm' | 'md' | 'lg' | 'xl') | null;
+  /**
+   * Se muestran en este orden. Arrastra para reordenar.
+   */
+  gallery?:
     | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
+        image: string | Media;
+        /**
+         * Vacío = se usa el de la imagen en Archivos. Llénalo para describirla en este proyecto o en otro idioma.
+         */
+        alt?: string | null;
+        /**
+         * Actualmente no se muestra en la web.
+         */
+        caption?: string | null;
+        id?: string | null;
       }[]
     | null;
-  password?: string | null;
-  collection: 'users';
+  seo?: {
+    /**
+     * Ideal 50–60 caracteres. "Auto-generar" lo arma con el nombre y el servicio principal.
+     */
+    metaTitle?: string | null;
+    /**
+     * Ideal 100–150 caracteres. Di qué se hizo, para quién y el resultado.
+     */
+    metaDescription?: string | null;
+    /**
+     * La que sale en WhatsApp, LinkedIn, etc. Ideal 1200×630. Si está vacía se usa la imagen principal.
+     */
+    ogImage?: (string | null) | Media;
+  };
+  /**
+   * El sitio real del cliente. Se le indica a Google como el trabajo publicado.
+   */
+  website?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -188,90 +274,29 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projects".
+ * via the `definition` "users".
  */
-export interface Project {
+export interface User {
   id: string;
-  title: string;
-  slug: string;
-  status: 'draft' | 'published' | 'archived';
-  featured?: boolean | null;
-  publishDate: string;
-  /**
-   * Para los filtros del listado de proyectos. No confundir con los Servicios de la portada.
-   */
-  projectFilters?:
-    | ('diseno-ux-ui' | 'desarrollo-web-movil' | 'desarrollo-branding' | 'marketing-digital' | 'pruebas-usabilidad')[]
-    | null;
-  hero: {
-    /**
-     * Chips verdes bajo el título. Lo que hicimos en este proyecto (máx. 6).
-     */
-    services?:
-      | {
-          name: string;
-          id?: string | null;
-        }[]
-      | null;
-    /**
-     * El primer párrafo en negrita se muestra como subtítulo.
-     */
-    description: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    };
-    /**
-     * Imagen grande de portada. También se usa al compartir el enlace.
-     */
-    bannerImage: string | Media;
-  };
-  client: {
-    name: string;
-    industry?: string | null;
-    logo?: (string | null) | Media;
-  };
-  /**
-   * Se muestran en este orden, debajo de la descripción. Arrastra para reordenar.
-   */
-  gallery?:
-    | {
-        image: string | Media;
-        /**
-         * Describe la imagen para accesibilidad y Google (no "Placeholder").
-         */
-        alt: string;
-        /**
-         * Actualmente no se muestra en la web.
-         */
-        caption?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  seo?: {
-    metaTitle?: string | null;
-    metaDescription?: string | null;
-    ogImage?: (string | null) | Media;
-  };
-  keywords?:
-    | {
-        keyword: string;
-        id?: string | null;
-      }[]
-    | null;
-  website?: string | null;
   updatedAt: string;
   createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -322,16 +347,16 @@ export interface PayloadLockedDocument {
   id: string;
   document?:
     | ({
-        relationTo: 'users';
-        value: string | User;
+        relationTo: 'projects';
+        value: string | Project;
       } | null)
     | ({
         relationTo: 'media';
         value: string | Media;
       } | null)
     | ({
-        relationTo: 'projects';
-        value: string | Project;
+        relationTo: 'users';
+        value: string | User;
       } | null)
     | ({
         relationTo: 'categories';
@@ -385,26 +410,56 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "projects_select".
  */
-export interface UsersSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  resetPasswordRequestedAt?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
+export interface ProjectsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  status?: T;
+  featured?: T;
+  publishDate?: T;
+  projectFilters?: T;
+  client?:
     | T
     | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
+        logo?: T;
+        logoSize?: T;
+        logoColor?: T;
+        name?: T;
+        industry?: T;
       };
+  hero?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              name?: T;
+              id?: T;
+            };
+        bannerImage?: T;
+        bannerHeight?: T;
+        description?: T;
+      };
+  galleryHeight?: T;
+  gallery?:
+    | T
+    | {
+        image?: T;
+        alt?: T;
+        caption?: T;
+        id?: T;
+      };
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        ogImage?: T;
+      };
+  website?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -450,58 +505,26 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projects_select".
+ * via the `definition` "users_select".
  */
-export interface ProjectsSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  status?: T;
-  featured?: T;
-  publishDate?: T;
-  projectFilters?: T;
-  hero?:
-    | T
-    | {
-        services?:
-          | T
-          | {
-              name?: T;
-              id?: T;
-            };
-        description?: T;
-        bannerImage?: T;
-      };
-  client?:
-    | T
-    | {
-        name?: T;
-        industry?: T;
-        logo?: T;
-      };
-  gallery?:
-    | T
-    | {
-        image?: T;
-        alt?: T;
-        caption?: T;
-        id?: T;
-      };
-  seo?:
-    | T
-    | {
-        metaTitle?: T;
-        metaDescription?: T;
-        ogImage?: T;
-      };
-  keywords?:
-    | T
-    | {
-        keyword?: T;
-        id?: T;
-      };
-  website?: T;
+export interface UsersSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  resetPasswordRequestedAt?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
