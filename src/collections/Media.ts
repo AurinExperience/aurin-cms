@@ -10,10 +10,9 @@ export const Media: CollectionConfig = {
     group: 'Contenido',
   },
   access: {
+    // Público solo para leer (la web muestra las imágenes). Subir, editar y borrar
+    // usa el default de Payload: requiere sesión en el admin.
     read: () => true,
-    create: () => true,
-    update: () => true,
-    delete: () => true,
   },
   fields: [
     {
