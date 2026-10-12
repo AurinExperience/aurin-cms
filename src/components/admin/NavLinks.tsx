@@ -1,3 +1,5 @@
+import { websiteURL } from '../../websiteURL'
+
 // Arriba del menú: volver al panel y abrir el sitio público
 export const NavLinks = () => (
   <div className="aurin-nav-top">
@@ -7,7 +9,7 @@ export const NavLinks = () => (
     <a
       className="nav__link"
       id="nav-site"
-      href={process.env.WEBSITE_URL || 'https://aurin.mx'}
+      href={websiteURL}
       target="_blank"
       rel="noopener noreferrer"
     >

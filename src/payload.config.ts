@@ -16,6 +16,7 @@ import { Media } from './collections/Media'
 import { Projects } from './collections/Projects'
 import { Categories } from './collections/Categories'
 import { Tags } from './collections/Tags'
+import { websiteURL } from './websiteURL'
 import {
   generateProjectDescription,
   generateProjectTitle,
@@ -29,8 +30,6 @@ const allowedOrigins = [
   'https://aurin-payload-cms.vercel.app',
   'http://localhost:3000',
 ].filter((o): o is string => Boolean(o))
-
-const websiteURL = process.env.WEBSITE_URL || 'https://aurin.mx'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -162,6 +161,9 @@ export default buildConfig({
           media: true,
         },
         token: process.env.BLOB_READ_WRITE_TOKEN,
+        // El navegador sube el archivo directo a Vercel Blob: una función de Vercel no acepta
+        // peticiones de más de 4.5 MB (413 FUNCTION_PAYLOAD_TOO_LARGE). Solo con sesión iniciada.
+        clientUploads: true,
         addRandomSuffix: true,
         cacheControlMaxAge: 365 * 24 * 60 * 60, // 1 año de caché
       })

@@ -8,6 +8,7 @@ import {
 } from '@payloadcms/plugin-seo/fields'
 import { DESCRIPTION, TITLE } from '../seo/projectSeo'
 import { revalidateWebsiteAfterChange, revalidateWebsiteAfterDelete } from '../hooks/revalidateWebsite'
+import { websiteURL } from '../websiteURL'
 import {
   BlockquoteFeature,
   BoldFeature,
@@ -36,7 +37,7 @@ export const Projects: CollectionConfig = {
     // Página de preview del sitio Astro: se redibuja mientras se escribe, sin guardar, y también muestra borradores
     livePreview: {
       url: ({ data, locale }) =>
-        `${process.env.WEBSITE_URL || 'http://localhost:4321'}${locale?.code === 'en' ? '/en' : ''}/preview/project/${encodeURIComponent(data?.id ?? '')}`,
+        `${websiteURL}${locale?.code === 'en' ? '/en' : ''}/preview/project/${encodeURIComponent(data?.id ?? '')}`,
       breakpoints: [
         { label: 'Móvil', name: 'mobile', width: 375, height: 667 },
         { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
