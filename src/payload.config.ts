@@ -164,7 +164,10 @@ export default buildConfig({
         // El navegador sube el archivo directo a Vercel Blob: una función de Vercel no acepta
         // peticiones de más de 4.5 MB (413 FUNCTION_PAYLOAD_TOO_LARGE). Solo con sesión iniciada.
         clientUploads: true,
-        addRandomSuffix: true,
+        // Sin sufijo aleatorio: con él, el adaptador guardaba el nombre de la última versión subida
+        // (p. ej. el recorte 768x1024) y los tamaños quedaban con nombres que no existen (404).
+        // Payload ya evita nombres repetidos (foto-1.png, foto-2.png…).
+        addRandomSuffix: false,
         cacheControlMaxAge: 365 * 24 * 60 * 60, // 1 año de caché
       })
     ] : []),
