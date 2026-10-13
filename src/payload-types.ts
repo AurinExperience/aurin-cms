@@ -167,7 +167,7 @@ export interface Project {
         }[]
       | null;
     /**
-     * Imagen grande de portada. También se usa al compartir el enlace.
+     * Imagen grande de portada. También se usa al compartir el enlace. Si el proyecto aún no tiene fotos, déjala vacía: no reutilices la de otro proyecto.
      */
     bannerImage?: (string | null) | Media;
     /**
