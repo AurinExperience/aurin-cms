@@ -257,9 +257,12 @@ export const Projects: CollectionConfig = {
                       type: 'upload',
                       label: 'Imagen Principal',
                       relationTo: 'media',
-                      required: true,
+                      // Opcional: al ser obligatoria, los proyectos sin fotos todavía
+                      // reciclaban la de Elite y el portafolio la repetía en todas las
+                      // tarjetas. Vacía, el sitio muestra el placeholder "Proyecto Aurin".
                       admin: {
-                        description: 'Imagen grande de portada. También se usa al compartir el enlace.',
+                        description:
+                          'Imagen grande de portada. También se usa al compartir el enlace. Si el proyecto aún no tiene fotos, déjala vacía: no reutilices la de otro proyecto.',
                       },
                     },
                     {
@@ -327,7 +330,8 @@ export const Projects: CollectionConfig = {
                   type: 'array',
                   label: 'Imágenes',
                   labels: { singular: 'Imagen', plural: 'Imágenes' },
-                  minRows: 1,
+                  // Sin mínimo: con `minRows: 1` un proyecto sin fotos tenía que tomar
+                  // prestada la de otro. Vacía, la página no muestra galería.
                   admin: {
                     description: 'Se muestran en este orden. Arrastra para reordenar.',
                     initCollapsed: true,
