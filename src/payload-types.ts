@@ -169,7 +169,7 @@ export interface Project {
     /**
      * Imagen grande de portada. También se usa al compartir el enlace.
      */
-    bannerImage: string | Media;
+    bannerImage?: (string | null) | Media;
     /**
      * La imagen se recorta para llenar el alto; en celular y tablet escala en proporción.
      */
