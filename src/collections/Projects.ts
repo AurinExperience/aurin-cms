@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Validate } from 'payload'
 import {
   MetaDescriptionField,
   MetaImageField,
@@ -23,6 +23,43 @@ import {
   UnorderedListFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+
+/**
+ * Una imagen de portada, miniatura o galería pertenece a un solo proyecto. Antes
+ * los proyectos sin fotos reciclaban `elite_banner.jpg` y el portafolio mostraba
+ * la foto de Elite en casi todas las tarjetas. El logo queda fuera a propósito:
+ * dos proyectos del mismo cliente (Ancient y Ancient Wallets) comparten logo.
+ * Solo consulta al guardar, no en cada cambio del formulario.
+ */
+const ownImage =
+  (required = false): Validate =>
+  async (value, { req, id, event }) => {
+    const mediaID = value && typeof value === 'object' ? (value as { id?: string }).id : value
+    if (!mediaID) return required ? 'Este campo es obligatorio.' : true
+    if (event === 'onChange') return true
+    const { docs } = await req.payload.find({
+      collection: 'projects',
+      depth: 0,
+      limit: 1,
+      pagination: false,
+      req,
+      where: {
+        and: [
+          ...(id ? [{ id: { not_equals: id } }] : []),
+          {
+            or: [
+              { 'hero.bannerImage': { equals: mediaID } },
+              { thumbnail: { equals: mediaID } },
+              { 'gallery.image': { equals: mediaID } },
+            ],
+          },
+        ],
+      },
+    })
+    return docs.length
+      ? `Esta imagen ya es del proyecto "${docs[0].title}". Sube una propia o deja el campo vacío.`
+      : true
+  }
 
 export const Projects: CollectionConfig = {
   slug: 'projects',
@@ -257,6 +294,7 @@ export const Projects: CollectionConfig = {
                       type: 'upload',
                       label: 'Imagen Principal',
                       relationTo: 'media',
+                      validate: ownImage(),
                       // Opcional: al ser obligatoria, los proyectos sin fotos todavía
                       // reciclaban la de Elite y el portafolio la repetía en todas las
                       // tarjetas. Vacía, el sitio muestra el placeholder "Proyecto Aurin".
@@ -346,6 +384,7 @@ export const Projects: CollectionConfig = {
                       label: 'Imagen',
                       relationTo: 'media',
                       required: true,
+                      validate: ownImage(true),
                     },
                     {
                       name: 'alt',
@@ -376,6 +415,7 @@ export const Projects: CollectionConfig = {
                   type: 'upload',
                   label: 'Miniatura',
                   relationTo: 'media',
+                  validate: ownImage(),
                   admin: {
                     description:
                       'Imagen cuadrada (1:1), mínimo 800 × 800 px. Vacía = se recorta la imagen principal.',
