@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Validate } from 'payload'
 import {
   MetaDescriptionField,
   MetaImageField,
@@ -23,6 +23,67 @@ import {
   UnorderedListFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+
+/**
+ * Una imagen de portada, miniatura o galería pertenece a un solo proyecto. Antes
+ * los proyectos sin fotos reciclaban `elite_banner.jpg` y el portafolio mostraba
+ * la foto de Elite en casi todas las tarjetas. El logo tiene su propia regla
+ * (ownLogo): se puede repetir entre proyectos del mismo cliente.
+ * Solo consulta al guardar, no en cada cambio del formulario.
+ */
+const ownImage =
+  (required = false): Validate =>
+  async (value, { req, id, event }) => {
+    const mediaID = value && typeof value === 'object' ? (value as { id?: string }).id : value
+    if (!mediaID) return required ? 'Este campo es obligatorio.' : true
+    if (event === 'onChange') return true
+    const { docs } = await req.payload.find({
+      collection: 'projects',
+      depth: 0,
+      limit: 1,
+      pagination: false,
+      req,
+      where: {
+        and: [
+          ...(id ? [{ id: { not_equals: id } }] : []),
+          {
+            or: [
+              { 'hero.bannerImage': { equals: mediaID } },
+              { thumbnail: { equals: mediaID } },
+              { 'gallery.image': { equals: mediaID } },
+            ],
+          },
+        ],
+      },
+    })
+    return docs.length
+      ? `Esta imagen ya es del proyecto "${docs[0].title}". Sube una propia o deja el campo vacío.`
+      : true
+  }
+
+/** El logo solo se repite entre proyectos del mismo cliente (Ancient y Ancient Wallets). */
+const ownLogo: Validate = async (value, { req, id, event, siblingData }) => {
+  const mediaID = value && typeof value === 'object' ? (value as { id?: string }).id : value
+  if (!mediaID || event === 'onChange') return true
+  const client = (siblingData as { name?: string } | undefined)?.name?.trim() ?? ''
+  const { docs } = await req.payload.find({
+    collection: 'projects',
+    depth: 0,
+    limit: 1,
+    pagination: false,
+    req,
+    where: {
+      and: [
+        ...(id ? [{ id: { not_equals: id } }] : []),
+        { 'client.logo': { equals: mediaID } },
+        { 'client.name': { not_equals: client } },
+      ],
+    },
+  })
+  return docs.length
+    ? `Este logo ya es de otro cliente (proyecto "${docs[0].title}"). Sube el logo de este cliente o deja el campo vacío.`
+    : true
+}
 
 export const Projects: CollectionConfig = {
   slug: 'projects',
@@ -173,6 +234,7 @@ export const Projects: CollectionConfig = {
                       type: 'upload',
                       label: 'Logo del Cliente',
                       relationTo: 'media',
+                      validate: ownLogo,
                     },
                     {
                       type: 'row',
@@ -257,6 +319,7 @@ export const Projects: CollectionConfig = {
                       type: 'upload',
                       label: 'Imagen Principal',
                       relationTo: 'media',
+                      validate: ownImage(),
                       // Opcional: al ser obligatoria, los proyectos sin fotos todavía
                       // reciclaban la de Elite y el portafolio la repetía en todas las
                       // tarjetas. Vacía, el sitio muestra el placeholder "Proyecto Aurin".
@@ -346,6 +409,7 @@ export const Projects: CollectionConfig = {
                       label: 'Imagen',
                       relationTo: 'media',
                       required: true,
+                      validate: ownImage(true),
                     },
                     {
                       name: 'alt',
@@ -376,6 +440,7 @@ export const Projects: CollectionConfig = {
                   type: 'upload',
                   label: 'Miniatura',
                   relationTo: 'media',
+                  validate: ownImage(),
                   admin: {
                     description:
                       'Imagen cuadrada (1:1), mínimo 800 × 800 px. Vacía = se recorta la imagen principal.',
@@ -402,14 +467,14 @@ export const Projects: CollectionConfig = {
                   descriptionPath: 'seo.metaDescription',
                   imagePath: 'seo.ogImage',
                 }),
-                // maxLength bloquea guardar si se pasa. Sin minLength a propósito: bloquearía guardar;
-                // el indicador del plugin ya marca el mínimo recomendado (50 / 100) por su cuenta
+                // Sin maxLength ni minLength: bloquean guardar el proyecto entero. Con maxLength 150,
+                // 13 proyectos con descripciones viejas más largas no se podían guardar ni para
+                // cambiar una imagen. El indicador del plugin ya marca en verde el rango ideal.
                 MetaTitleField({
                   hasGenerateFn: true,
                   overrides: {
                     name: 'metaTitle',
                     label: 'Título en Google',
-                    maxLength: TITLE.max,
                     admin: { description: `Ideal ${TITLE.min}–${TITLE.max} caracteres. "Auto-generar" lo arma con el nombre y el servicio principal.` },
                   },
                 }),
@@ -418,7 +483,6 @@ export const Projects: CollectionConfig = {
                   overrides: {
                     name: 'metaDescription',
                     label: 'Descripción en Google',
-                    maxLength: DESCRIPTION.max,
                     admin: { description: `Ideal ${DESCRIPTION.min}–${DESCRIPTION.max} caracteres. Di qué se hizo, para quién y el resultado.` },
                   },
                 }),
