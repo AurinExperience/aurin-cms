@@ -467,14 +467,14 @@ export const Projects: CollectionConfig = {
                   descriptionPath: 'seo.metaDescription',
                   imagePath: 'seo.ogImage',
                 }),
-                // maxLength bloquea guardar si se pasa. Sin minLength a propósito: bloquearía guardar;
-                // el indicador del plugin ya marca el mínimo recomendado (50 / 100) por su cuenta
+                // Sin maxLength ni minLength: bloquean guardar el proyecto entero. Con maxLength 150,
+                // 13 proyectos con descripciones viejas más largas no se podían guardar ni para
+                // cambiar una imagen. El indicador del plugin ya marca en verde el rango ideal.
                 MetaTitleField({
                   hasGenerateFn: true,
                   overrides: {
                     name: 'metaTitle',
                     label: 'Título en Google',
-                    maxLength: TITLE.max,
                     admin: { description: `Ideal ${TITLE.min}–${TITLE.max} caracteres. "Auto-generar" lo arma con el nombre y el servicio principal.` },
                   },
                 }),
@@ -483,7 +483,6 @@ export const Projects: CollectionConfig = {
                   overrides: {
                     name: 'metaDescription',
                     label: 'Descripción en Google',
-                    maxLength: DESCRIPTION.max,
                     admin: { description: `Ideal ${DESCRIPTION.min}–${DESCRIPTION.max} caracteres. Di qué se hizo, para quién y el resultado.` },
                   },
                 }),
