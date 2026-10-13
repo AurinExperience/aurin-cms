@@ -27,8 +27,8 @@ import {
 /**
  * Una imagen de portada, miniatura o galería pertenece a un solo proyecto. Antes
  * los proyectos sin fotos reciclaban `elite_banner.jpg` y el portafolio mostraba
- * la foto de Elite en casi todas las tarjetas. El logo queda fuera a propósito:
- * dos proyectos del mismo cliente (Ancient y Ancient Wallets) comparten logo.
+ * la foto de Elite en casi todas las tarjetas. El logo tiene su propia regla
+ * (ownLogo): se puede repetir entre proyectos del mismo cliente.
  * Solo consulta al guardar, no en cada cambio del formulario.
  */
 const ownImage =
@@ -60,6 +60,30 @@ const ownImage =
       ? `Esta imagen ya es del proyecto "${docs[0].title}". Sube una propia o deja el campo vacío.`
       : true
   }
+
+/** El logo solo se repite entre proyectos del mismo cliente (Ancient y Ancient Wallets). */
+const ownLogo: Validate = async (value, { req, id, event, siblingData }) => {
+  const mediaID = value && typeof value === 'object' ? (value as { id?: string }).id : value
+  if (!mediaID || event === 'onChange') return true
+  const client = (siblingData as { name?: string } | undefined)?.name?.trim() ?? ''
+  const { docs } = await req.payload.find({
+    collection: 'projects',
+    depth: 0,
+    limit: 1,
+    pagination: false,
+    req,
+    where: {
+      and: [
+        ...(id ? [{ id: { not_equals: id } }] : []),
+        { 'client.logo': { equals: mediaID } },
+        { 'client.name': { not_equals: client } },
+      ],
+    },
+  })
+  return docs.length
+    ? `Este logo ya es de otro cliente (proyecto "${docs[0].title}"). Sube el logo de este cliente o deja el campo vacío.`
+    : true
+}
 
 export const Projects: CollectionConfig = {
   slug: 'projects',
@@ -210,6 +234,7 @@ export const Projects: CollectionConfig = {
                       type: 'upload',
                       label: 'Logo del Cliente',
                       relationTo: 'media',
+                      validate: ownLogo,
                     },
                     {
                       type: 'row',
