@@ -330,7 +330,8 @@ export const Projects: CollectionConfig = {
                   type: 'array',
                   label: 'Imágenes',
                   labels: { singular: 'Imagen', plural: 'Imágenes' },
-                  minRows: 1,
+                  // Sin mínimo: con `minRows: 1` un proyecto sin fotos tenía que tomar
+                  // prestada la de otro. Vacía, la página no muestra galería.
                   admin: {
                     description: 'Se muestran en este orden. Arrastra para reordenar.',
                     initCollapsed: true,
