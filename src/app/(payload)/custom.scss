@@ -121,3 +121,21 @@ div.nav__link {
     cursor: pointer;
   }
 }
+
+// Muestra de color a la izquierda del código hex (ColorField)
+.field-type__wrap:has(> .aurin-color-swatch) {
+  display: flex;
+  align-items: center;
+}
+
+.aurin-color-swatch {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+  padding: 2px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s);
+  background: var(--theme-input-bg);
+  cursor: pointer;
+}

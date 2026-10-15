@@ -10,6 +10,7 @@ import { DESCRIPTION, TITLE } from '../seo/projectSeo'
 import { revalidateWebsiteAfterChange, revalidateWebsiteAfterDelete } from '../hooks/revalidateWebsite'
 import { websiteURL } from '../websiteURL'
 import {
+  AlignFeature,
   BlockquoteFeature,
   BoldFeature,
   FixedToolbarFeature,
@@ -23,6 +24,10 @@ import {
   UnorderedListFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+
+/** "#D0DF00": la web lo pone tal cual en el CSS, así que solo hex de 6 dígitos */
+const hexColor: Validate = (value) =>
+  !value || /^#[0-9a-f]{6}$/i.test(String(value)) || 'Usa un color en formato #RRGGBB, por ejemplo #D0DF00.'
 
 /** El logo solo se repite entre proyectos del mismo cliente (Ancient y Ancient Wallets). */
 const ownLogo: Validate = async (value, { req, id, event, siblingData }) => {
@@ -394,8 +399,109 @@ export const Projects: CollectionConfig = {
             },
             {
               type: 'collapsible',
-              label: '4 · Miniatura (tarjeta en "Historias que hablan por sí solas" y el portafolio)',
+              label: '4 · Tarjeta (en "Historias que hablan por sí solas" y el portafolio)',
               fields: [
+                {
+                  name: 'cardText',
+                  type: 'group',
+                  label: 'Texto de la tarjeta',
+                  admin: {
+                    description:
+                      'Si escribes un texto, la tarjeta lo muestra sobre el color de fondo en lugar de la miniatura. Frases cortas (unas 8 palabras) se leen mejor. Enter = nueva línea.',
+                  },
+                  fields: [
+                    {
+                      name: 'text',
+                      type: 'richText',
+                      label: 'Texto',
+                      localized: true,
+                      editor: lexicalEditor({
+                        features: [
+                          ParagraphFeature(),
+                          BoldFeature(),
+                          ItalicFeature(),
+                          UnderlineFeature(),
+                          AlignFeature(),
+                          FixedToolbarFeature(),
+                          InlineToolbarFeature(),
+                        ],
+                      }),
+                    },
+                    {
+                      type: 'row',
+                      fields: [
+                        {
+                          name: 'font',
+                          type: 'select',
+                          label: 'Tipografía',
+                          defaultValue: 'display',
+                          options: [
+                            { label: 'Titillium Web (títulos)', value: 'display' },
+                            { label: 'Clarity City (texto)', value: 'body' },
+                          ],
+                          admin: { width: '33%' },
+                        },
+                        {
+                          name: 'weight',
+                          type: 'select',
+                          label: 'Grosor',
+                          defaultValue: '600',
+                          options: [
+                            { label: 'Normal', value: '400' },
+                            { label: 'Seminegrita', value: '600' },
+                            { label: 'Negrita', value: '700' },
+                          ],
+                          admin: { width: '33%' },
+                        },
+                        {
+                          name: 'size',
+                          type: 'select',
+                          label: 'Tamaño',
+                          defaultValue: 'md',
+                          options: [
+                            { label: 'Chico', value: 'sm' },
+                            { label: 'Mediano', value: 'md' },
+                            { label: 'Grande', value: 'lg' },
+                            { label: 'Extra grande', value: 'xl' },
+                          ],
+                          admin: {
+                            width: '33%',
+                            description: 'Crece y se encoge con la tarjeta: se ve igual en celular y en computadora.',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      type: 'row',
+                      fields: [
+                        {
+                          name: 'background',
+                          type: 'text',
+                          label: 'Color de fondo',
+                          defaultValue: '#D0DF00',
+                          validate: hexColor,
+                          admin: {
+                            width: '50%',
+                            placeholder: '#D0DF00',
+                            components: { Field: '/components/admin/ColorField#ColorField' },
+                          },
+                        },
+                        {
+                          name: 'color',
+                          type: 'text',
+                          label: 'Color del texto',
+                          defaultValue: '#0A0A0A',
+                          validate: hexColor,
+                          admin: {
+                            width: '50%',
+                            placeholder: '#0A0A0A',
+                            components: { Field: '/components/admin/ColorField#ColorField' },
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
                 {
                   name: 'thumbnail',
                   type: 'upload',
@@ -403,7 +509,7 @@ export const Projects: CollectionConfig = {
                   relationTo: 'media',
                   admin: {
                     description:
-                      'Imagen cuadrada (1:1), mínimo 800 × 800 px. Vacía = se recorta la imagen principal.',
+                      'Imagen cuadrada (1:1), mínimo 800 × 800 px. Vacía = se recorta la imagen principal. Si hay texto de la tarjeta, se muestra el texto.',
                   },
                 },
               ],
