@@ -45,6 +45,7 @@ export default buildConfig({
       icons: [{ rel: 'icon', type: 'image/svg+xml', url: '/aurin-icon.svg' }],
     },
     components: {
+      providers: ['/components/admin/NewVersionNotice#NewVersionNotice'],
       beforeNavLinks: ['/components/admin/NavLinks#NavLinks'],
       graphics: {
         Logo: '/components/admin/Logo#Logo',
@@ -86,6 +87,14 @@ export default buildConfig({
   
   // Orden del menú: Contenido (Proyectos, Archivos) y luego Ajustes (Usuarios)
   collections: [Projects, Media, Users, Categories, Tags],
+  // Deploy en producción ahora mismo: el admin lo compara con el suyo (NewVersionNotice)
+  endpoints: [
+    {
+      path: '/version',
+      method: 'get',
+      handler: () => Response.json({ deployment: process.env.VERCEL_DEPLOYMENT_ID ?? null }),
+    },
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
