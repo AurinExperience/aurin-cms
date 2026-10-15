@@ -91,3 +91,33 @@ div.nav__link {
 #nav-tags {
   --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1'/%3E%3C/svg%3E");
 }
+
+// Aviso de versión nueva del CMS (NewVersionNotice)
+.aurin-new-version {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: calc(100vw - 32px);
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--aurin-yellow);
+  color: #0a0a0a;
+  font-weight: 600;
+  transform: translateX(-50%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+
+  button {
+    flex: none;
+    padding: 6px 14px;
+    border: 0;
+    border-radius: 6px;
+    background: #0a0a0a;
+    color: var(--aurin-yellow);
+    font: inherit;
+    cursor: pointer;
+  }
+}
