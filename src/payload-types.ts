@@ -215,7 +215,35 @@ export interface Project {
       }[]
     | null;
   /**
-   * Imagen cuadrada (1:1), mínimo 800 × 800 px. Vacía = se recorta la imagen principal.
+   * Si escribes un texto, la tarjeta lo muestra sobre el color de fondo en lugar de la miniatura. Frases cortas (unas 8 palabras) se leen mejor. Enter = nueva línea.
+   */
+  cardText?: {
+    text?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    font?: ('display' | 'body') | null;
+    weight?: ('400' | '600' | '700') | null;
+    /**
+     * Crece y se encoge con la tarjeta: se ve igual en celular y en computadora.
+     */
+    size?: ('sm' | 'md' | 'lg' | 'xl') | null;
+    background?: string | null;
+    color?: string | null;
+  };
+  /**
+   * Imagen cuadrada (1:1), mínimo 800 × 800 px. Vacía = se recorta la imagen principal. Si hay texto de la tarjeta, se muestra el texto.
    */
   thumbnail?: (string | null) | Media;
   seo?: {
@@ -453,6 +481,16 @@ export interface ProjectsSelect<T extends boolean = true> {
         alt?: T;
         caption?: T;
         id?: T;
+      };
+  cardText?:
+    | T
+    | {
+        text?: T;
+        font?: T;
+        weight?: T;
+        size?: T;
+        background?: T;
+        color?: T;
       };
   thumbnail?: T;
   seo?:
