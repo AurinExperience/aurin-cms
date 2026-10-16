@@ -9,17 +9,22 @@ import {
 import { DESCRIPTION, TITLE } from '../seo/projectSeo'
 import { revalidateWebsiteAfterChange, revalidateWebsiteAfterDelete } from '../hooks/revalidateWebsite'
 import { websiteURL } from '../websiteURL'
+import { TextStylesFeature } from '../components/admin/textStyles'
 import {
   AlignFeature,
   BlockquoteFeature,
   BoldFeature,
   FixedToolbarFeature,
   HeadingFeature,
+  HorizontalRuleFeature,
+  IndentFeature,
   InlineToolbarFeature,
   ItalicFeature,
   LinkFeature,
   OrderedListFeature,
   ParagraphFeature,
+  StrikethroughFeature,
+  UploadFeature,
   UnderlineFeature,
   UnorderedListFeature,
   lexicalEditor,
@@ -66,7 +71,7 @@ export const Projects: CollectionConfig = {
     // Página de preview del sitio Astro: se redibuja mientras se escribe, sin guardar, y también muestra borradores
     livePreview: {
       url: ({ data, locale }) =>
-        `${websiteURL}${locale?.code === 'en' ? '/en' : ''}/preview/project/${encodeURIComponent(data?.id ?? '')}`,
+        `${websiteURL}${locale?.code === 'en' ? '/en' : ''}/preview/project/${encodeURIComponent(data?.id || 'nuevo')}`,
       breakpoints: [
         { label: 'Móvil', name: 'mobile', width: 375, height: 667 },
         { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
@@ -297,20 +302,50 @@ export const Projects: CollectionConfig = {
                       editor: lexicalEditor({
                         features: [
                           ParagraphFeature(),
-                          HeadingFeature({ enabledHeadingSizes: ['h2'] }),
+                          HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
                           BoldFeature(),
                           ItalicFeature(),
                           UnderlineFeature(),
+                          StrikethroughFeature(),
+                          TextStylesFeature(),
+                          AlignFeature(),
+                          IndentFeature(),
                           UnorderedListFeature(),
                           OrderedListFeature(),
                           BlockquoteFeature(),
+                          HorizontalRuleFeature(),
+                          // Imagen dentro del texto: el lápiz sobre la imagen abre "Ancho"; la
+                          // alineación es la de la barra (izquierda/centro/derecha), como en Docs
+                          UploadFeature({
+                            collections: {
+                              media: {
+                                fields: [
+                                  {
+                                    name: 'width',
+                                    type: 'select',
+                                    label: 'Ancho',
+                                    defaultValue: 'md',
+                                    options: [
+                                      { label: 'Pequeña (1/3 del texto)', value: 'sm' },
+                                      { label: 'Mediana (1/2)', value: 'md' },
+                                      { label: 'Grande (3/4)', value: 'lg' },
+                                      { label: 'Completa', value: 'full' },
+                                    ],
+                                  },
+                                ],
+                              },
+                            },
+                          }),
                           LinkFeature(),
-                          FixedToolbarFeature(),
+                          // Orden como en Google Docs: estilo, letra, B I U, color | alineación
+                          FixedToolbarFeature({ customGroups: { align: { order: 45 }, indent: { order: 46 } } }),
                           InlineToolbarFeature(),
                         ],
                       }),
                       admin: {
-                        description: 'Empieza con un "Encabezado 2": es el título grande. Un encabezado más abajo sale como subtítulo en ese mismo lugar. Las negritas son solo negritas.',
+                        className: 'aurin-texto',
+                        description:
+                          'Selecciona cualquier palabra y cámbiale Tipografía, Tamaño, Grosor, Color o Resaltado con los menús de la barra (también salen en la barrita que aparece al seleccionar). Estilos de bloque: si empieza con "Encabezado 2" es el título grande en dos tonos; más abajo, Encabezado 1 = título gigante blanco, 2 = subtítulo amarillo, 3 = etiqueta amarilla en negritas, 4 = subtítulo chico. Imagen: escribe "/subir" o usa el "+"; selecciónala y alinéala con el botón de alineación; el lápiz sobre ella cambia el ancho.',
                       },
                     },
                   ],

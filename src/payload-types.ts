@@ -173,7 +173,7 @@ export interface Project {
      */
     bannerHeight?: ('sm' | 'md' | 'lg' | 'xl') | null;
     /**
-     * Empieza con un "Encabezado 2": es el título grande. Un encabezado más abajo sale como subtítulo en ese mismo lugar. Las negritas son solo negritas.
+     * Selecciona cualquier palabra y cámbiale Tipografía, Tamaño, Grosor, Color o Resaltado con los menús de la barra (también salen en la barrita que aparece al seleccionar). Estilos de bloque: si empieza con "Encabezado 2" es el título grande en dos tonos; más abajo, Encabezado 1 = título gigante blanco, 2 = subtítulo amarillo, 3 = etiqueta amarilla en negritas, 4 = subtítulo chico. Imagen: escribe "/subir" o usa el "+"; selecciónala y alinéala con el botón de alineación; el lápiz sobre ella cambia el ancho.
      */
     description: {
       root: {

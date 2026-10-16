@@ -139,3 +139,58 @@ div.nav__link {
   background: var(--theme-input-bg);
   cursor: pointer;
 }
+
+// "2 · Texto": las tipografías de la web para que Tipografía/Grosor se vean como quedarán
+// (archivos copiados de AurinWebsite/public/fonts, solo latin)
+@font-face {
+  font-family: 'Clarity City';
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/clarity-city-100-900-normal-latin.woff2') format('woff2');
+}
+@each $w in 200, 300, 400, 600, 700 {
+  @font-face {
+    font-family: 'Titillium Web';
+    font-weight: $w;
+    font-display: swap;
+    src: url('/fonts/titillium-web-#{$w}-normal-latin.woff2') format('woff2');
+  }
+}
+
+// Encabezados con la jerarquía de la web (Template.module.css), a escala del editor
+.aurin-texto .ContentEditable__root {
+  font-family: 'Clarity City', sans-serif;
+
+  .LexicalEditorTheme__h1,
+  .LexicalEditorTheme__h2,
+  .LexicalEditorTheme__h4 {
+    font-family: 'Titillium Web', sans-serif;
+  }
+  .LexicalEditorTheme__h1 {
+    font-size: 44px;
+    font-weight: 300;
+    line-height: 1.05;
+  }
+  .LexicalEditorTheme__h2 {
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--aurin-yellow);
+  }
+  .LexicalEditorTheme__h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--aurin-yellow);
+    margin-block-end: 0;
+  }
+  .LexicalEditorTheme__h4 {
+    font-size: 20px;
+    font-weight: 400;
+  }
+}
+
+// Imagen dentro del texto: Payload la alinea (izquierda/centro/derecha) pero la dibuja a 450px
+// fijos, lo mismo que la columna, y la alineación no se notaba
+.aurin-texto .LexicalEditorTheme__upload__contents--landscape img {
+  min-width: 0;
+  max-width: 260px;
+}
