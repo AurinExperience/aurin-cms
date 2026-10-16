@@ -138,11 +138,9 @@ export interface Project {
   featured?: boolean | null;
   publishDate: string;
   /**
-   * Para los filtros del listado de proyectos. No confundir con los Servicios de la portada.
+   * Para los filtros del listado de proyectos. Se agregan o editan en Taxonomía → Categorías. No confundir con los Servicios de la portada.
    */
-  projectFilters?:
-    | ('diseno-ux-ui' | 'desarrollo-web-movil' | 'desarrollo-branding' | 'marketing-digital' | 'pruebas-usabilidad')[]
-    | null;
+  categories?: (string | Category)[] | null;
   /**
    * En la web solo se muestra el logo, junto al título.
    */
@@ -158,7 +156,7 @@ export interface Project {
   };
   hero: {
     /**
-     * Chips verdes bajo el título. Lo que hicimos en este proyecto (máx. 6).
+     * Chips verdes bajo el título. Lo que hicimos en este proyecto.
      */
     services?:
       | {
@@ -268,6 +266,25 @@ export interface Project {
   createdAt: string;
 }
 /**
+ * Los filtros del listado de proyectos. Se asignan en cada proyecto, en "Categorías (filtros)". En la web solo aparecen las que tienen al menos un proyecto.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: string;
+  /**
+   * Captúralo en español y en inglés (selector de idioma arriba a la derecha).
+   */
+  name: string;
+  /**
+   * Se llena solo con el nombre. Déjalo así.
+   */
+  slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
@@ -329,19 +346,6 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
- */
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string | null;
-  color?: string | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -450,7 +454,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   status?: T;
   featured?: T;
   publishDate?: T;
-  projectFilters?: T;
+  categories?: T;
   client?:
     | T
     | {
@@ -576,8 +580,6 @@ export interface UsersSelect<T extends boolean = true> {
 export interface CategoriesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
-  description?: T;
-  color?: T;
   updatedAt?: T;
   createdAt?: T;
 }
