@@ -264,9 +264,8 @@ export const Projects: CollectionConfig = {
                       label: 'Servicios',
                       labels: { singular: 'Servicio', plural: 'Servicios' },
                       minRows: 1,
-                      maxRows: 6,
                       admin: {
-                        description: 'Chips verdes bajo el título. Lo que hicimos en este proyecto (máx. 6).',
+                        description: 'Chips verdes bajo el título. Lo que hicimos en este proyecto.',
                         initCollapsed: true,
                         components: {
                           RowLabel: { path: '/components/ArrayRowLabel#ArrayRowLabel', clientProps: { fallback: 'Servicio' } },
