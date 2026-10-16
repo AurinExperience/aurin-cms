@@ -173,7 +173,7 @@ export interface Project {
      */
     bannerHeight?: ('sm' | 'md' | 'lg' | 'xl') | null;
     /**
-     * Usa "Encabezado 2" para el título grande (con dos encabezados seguidos, el primero sale resaltado). Todo lo demás va debajo, en párrafos, listas o citas.
+     * Empieza con un "Encabezado 2": es el título grande. Un encabezado más abajo sale como subtítulo en ese mismo lugar. Las negritas son solo negritas.
      */
     description: {
       root: {
