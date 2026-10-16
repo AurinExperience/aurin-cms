@@ -30,8 +30,6 @@ async function seedSinfonicaProject() {
         data: {
           name: 'Diseño Web',
           slug: 'web-design',
-          description: 'Proyectos de diseño y desarrollo web',
-          color: '#d0df00',
         },
         locale: 'es',
       });

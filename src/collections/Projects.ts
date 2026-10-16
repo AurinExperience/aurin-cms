@@ -61,7 +61,7 @@ export const Projects: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'projectFilters', 'status', 'featured', 'updatedAt'],
+    defaultColumns: ['title', 'categories', 'status', 'featured', 'updatedAt'],
     group: 'Contenido',
     // Página de preview del sitio Astro: se redibuja mientras se escribe, sin guardar, y también muestra borradores
     livePreview: {
@@ -147,35 +147,15 @@ export const Projects: CollectionConfig = {
       },
     },
     {
-      name: 'projectFilters',
-      type: 'select',
-      label: 'Categorías (filtros)',
+      // Antes era un select con opciones fijas en el código y no veía las Categorías del CMS
+      name: 'categories',
+      type: 'relationship',
+      relationTo: 'categories',
       hasMany: true,
-      options: [
-        {
-          label: 'Diseño UX/UI',
-          value: 'diseno-ux-ui',
-        },
-        {
-          label: 'Desarrollo web y de aplicaciones móviles',
-          value: 'desarrollo-web-movil',
-        },
-        {
-          label: 'Desarrollo de branding',
-          value: 'desarrollo-branding',
-        },
-        {
-          label: 'Marketing digital y redes sociales',
-          value: 'marketing-digital',
-        },
-        {
-          label: 'Pruebas de usabilidad',
-          value: 'pruebas-usabilidad',
-        },
-      ],
+      label: 'Categorías (filtros)',
       admin: {
         position: 'sidebar',
-        description: 'Para los filtros del listado de proyectos. No confundir con los Servicios de la portada.',
+        description: 'Para los filtros del listado de proyectos. Se agregan o editan en Taxonomía → Categorías. No confundir con los Servicios de la portada.',
       },
     },
     // Tabs sin `name`, collapsibles y grupos sin label solo cambian el layout del admin, no la forma de los datos
