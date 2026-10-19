@@ -354,7 +354,58 @@ export const Projects: CollectionConfig = {
             },
             {
               type: 'collapsible',
-              label: '3 · Galería de imágenes (al final)',
+              label: '3 · Dispositivo (antes de la galería)',
+              fields: [
+                {
+                  name: 'device',
+                  type: 'radio',
+                  label: 'Dispositivo',
+                  defaultValue: 'laptop',
+                  options: [
+                    { label: 'Laptop', value: 'laptop' },
+                    { label: 'Tablet', value: 'tablet' },
+                    { label: 'Celular', value: 'phone' },
+                  ],
+                  admin: { layout: 'horizontal' },
+                },
+                {
+                  name: 'deviceImages',
+                  type: 'array',
+                  label: 'Imágenes en la pantalla',
+                  labels: { singular: 'Imagen', plural: 'Imágenes' },
+                  // Vacía, la página no muestra el dispositivo
+                  admin: {
+                    description:
+                      'Pasan por la pantalla al hacer scroll, una debajo de otra en este orden. Sirve una captura de página completa o varias (para celular, capturas de celular). Vacío = no se muestra.',
+                    initCollapsed: true,
+                    components: {
+                      RowLabel: { path: '/components/ArrayRowLabel#ArrayRowLabel', clientProps: { fallback: 'Imagen' } },
+                    },
+                  },
+                  fields: [
+                    {
+                      name: 'image',
+                      type: 'upload',
+                      label: 'Imagen',
+                      relationTo: 'media',
+                      required: true,
+                    },
+                    {
+                      name: 'alt',
+                      type: 'text',
+                      label: 'Texto Alternativo (opcional)',
+                      localized: true,
+                      admin: {
+                        description: 'Vacío = se usa el de la imagen en Archivos. Llénalo para describirla en este proyecto o en otro idioma.',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: '4 · Galería de imágenes (al final)',
               fields: [
                 {
                   name: 'galleryLayout',
@@ -432,7 +483,7 @@ export const Projects: CollectionConfig = {
             },
             {
               type: 'collapsible',
-              label: '4 · Tarjeta (en "Historias que hablan por sí solas" y el portafolio)',
+              label: '5 · Tarjeta (en "Historias que hablan por sí solas" y el portafolio)',
               fields: [
                 {
                   name: 'cardText',
