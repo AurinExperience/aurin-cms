@@ -191,6 +191,20 @@ export interface Project {
       [k: string]: unknown;
     };
   };
+  device?: ('laptop' | 'tablet' | 'phone') | null;
+  /**
+   * Pasan por la pantalla al hacer scroll, una debajo de otra en este orden. Sirve una captura de página completa o varias (para celular, capturas de celular). Vacío = no se muestra.
+   */
+  deviceImages?:
+    | {
+        image: string | Media;
+        /**
+         * Vacío = se usa el de la imagen en Archivos. Llénalo para describirla en este proyecto o en otro idioma.
+         */
+        alt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   galleryLayout?: ('slider' | 'masonry') | null;
   /**
    * En celular se ajusta para no salirse de la pantalla.
@@ -477,6 +491,14 @@ export interface ProjectsSelect<T extends boolean = true> {
         bannerImage?: T;
         bannerHeight?: T;
         description?: T;
+      };
+  device?: T;
+  deviceImages?:
+    | T
+    | {
+        image?: T;
+        alt?: T;
+        id?: T;
       };
   galleryLayout?: T;
   galleryHeight?: T;
