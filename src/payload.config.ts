@@ -135,7 +135,8 @@ export default buildConfig({
         }),
       generateDescription: ({ doc, locale }) =>
         generateProjectDescription({
-          description: doc?.hero?.description,
+          // El primer Texto de "2 · Secciones"
+          description: doc?.sections?.find((s: { blockType?: string }) => s?.blockType === 'text')?.content,
           services: doc?.hero?.services?.map((s: { name?: string }) => s?.name ?? '') ?? [],
           client: doc?.client?.name,
           locale: locale === 'en' ? 'en' : 'es',

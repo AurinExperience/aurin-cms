@@ -253,3 +253,11 @@ div.nav__link {
     color: var(--theme-elevation-600);
   }
 }
+
+// "2 · Secciones" de Projects: línea debajo de "Añadir Sección" para que se vea dónde terminan
+// las secciones de la página y empieza lo demás
+.aurin-sections {
+  padding-bottom: calc(var(--base) * 1.5);
+  margin-bottom: calc(var(--base) * 1.5);
+  border-bottom: 1px solid var(--theme-elevation-150);
+}
