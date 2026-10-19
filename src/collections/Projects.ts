@@ -354,8 +354,21 @@ export const Projects: CollectionConfig = {
             },
             {
               type: 'collapsible',
-              label: '3 · Carrusel de imágenes (al final)',
+              label: '3 · Galería de imágenes (al final)',
               fields: [
+                {
+                  name: 'galleryLayout',
+                  type: 'radio',
+                  label: 'Cómo se muestran',
+                  defaultValue: 'slider',
+                  options: [
+                    { label: 'Slider', value: 'slider' },
+                    { label: 'Mosaico', value: 'masonry' },
+                  ],
+                  admin: {
+                    components: { Field: '/components/admin/GalleryLayoutField#GalleryLayoutField' },
+                  },
+                },
                 {
                   name: 'galleryHeight',
                   type: 'select',
@@ -367,7 +380,11 @@ export const Projects: CollectionConfig = {
                     { label: 'Alto', value: 'lg' },
                     { label: 'Extra alto', value: 'xl' },
                   ],
-                  admin: { description: 'En celular se ajusta para no salirse de la pantalla.' },
+                  admin: {
+                    description: 'En celular se ajusta para no salirse de la pantalla.',
+                    // Solo el slider tiene alto fijo; en mosaico cada foto va en su proporción
+                    condition: (_, siblingData) => siblingData?.galleryLayout !== 'masonry',
+                  },
                 },
                 {
                   name: 'gallery',
@@ -403,9 +420,11 @@ export const Projects: CollectionConfig = {
                     {
                       name: 'caption',
                       type: 'text',
-                      label: 'Descripción (opcional)',
+                      label: 'Texto sobre la imagen (opcional)',
                       localized: true,
-                      admin: { description: 'Actualmente no se muestra en la web.' },
+                      admin: {
+                        description: 'Describe el proyecto en esta foto. En mosaico aparece debajo de la imagen al ampliarla.',
+                      },
                     },
                   ],
                 },
