@@ -154,7 +154,7 @@ export interface Project {
     name: string;
     industry?: string | null;
   };
-  hero: {
+  hero?: {
     /**
      * Chips verdes bajo el título. Lo que hicimos en este proyecto.
      */
@@ -165,67 +165,98 @@ export interface Project {
         }[]
       | null;
     /**
-     * Imagen grande de portada. También se usa al compartir el enlace. Si el proyecto aún no tiene fotos, déjala vacía: no reutilices la de otro proyecto.
+     * La de las tarjetas del portafolio y al compartir el enlace. En la página sale donde pongas una sección Imagen sin imagen propia. Si el proyecto aún no tiene fotos, déjala vacía: no reutilices la de otro proyecto.
      */
     bannerImage?: (string | null) | Media;
-    /**
-     * La imagen se recorta para llenar el alto; en celular y tablet escala en proporción.
-     */
-    bannerHeight?: ('sm' | 'md' | 'lg' | 'xl') | null;
-    /**
-     * Selecciona cualquier palabra y cámbiale Tipografía, Tamaño, Grosor, Color o Resaltado con los menús de la barra (también salen en la barrita que aparece al seleccionar). Estilos de bloque: si empieza con "Encabezado 2" es el título grande en dos tonos; más abajo, Encabezado 1 = título gigante blanco, 2 = subtítulo amarillo, 3 = etiqueta amarilla en negritas, 4 = subtítulo chico. Imagen: escribe "/subir" o usa el "+"; selecciónala y alinéala con el botón de alineación; el lápiz sobre ella cambia el ancho.
-     */
-    description: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    };
   };
-  device?: ('laptop' | 'tablet' | 'phone') | null;
   /**
-   * Pasan por la pantalla al hacer scroll, una debajo de otra en este orden. Sirve una captura de página completa o varias (para celular, capturas de celular). Vacío = no se muestra.
+   * Se muestran en este orden. Arrastra para moverlas, usa los tres puntos para duplicar o quitar, y "Añadir Sección" para sumar otra Imagen, Texto, Dispositivo o Galería. Una sección vacía no se muestra.
    */
-  deviceImages?:
-    | {
-        image: string | Media;
-        /**
-         * Vacío = se usa el de la imagen en Archivos. Llénalo para describirla en este proyecto o en otro idioma.
-         */
-        alt?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  galleryLayout?: ('slider' | 'masonry') | null;
-  /**
-   * En celular se ajusta para no salirse de la pantalla.
-   */
-  galleryHeight?: ('sm' | 'md' | 'lg' | 'xl') | null;
-  /**
-   * Se muestran en este orden. Arrastra para reordenar.
-   */
-  gallery?:
-    | {
-        image: string | Media;
-        /**
-         * Vacío = se usa el de la imagen en Archivos. Llénalo para describirla en este proyecto o en otro idioma.
-         */
-        alt?: string | null;
-        /**
-         * Describe el proyecto en esta foto. En mosaico aparece debajo de la imagen al ampliarla.
-         */
-        caption?: string | null;
-        id?: string | null;
-      }[]
+  sections?:
+    | (
+        | {
+            /**
+             * Vacía = la imagen de portada (sección 1).
+             */
+            image?: (string | null) | Media;
+            /**
+             * La imagen se recorta para llenar el alto; en celular y tablet escala en proporción.
+             */
+            height?: ('sm' | 'md' | 'lg' | 'xl') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'image';
+          }
+        | {
+            /**
+             * Selecciona cualquier palabra y cámbiale Tipografía, Tamaño, Grosor, Color o Resaltado con los menús de la barra (también salen en la barrita que aparece al seleccionar). Estilos de bloque: si empieza con "Encabezado 2" es el título grande en dos tonos; más abajo, Encabezado 1 = título gigante blanco, 2 = subtítulo amarillo, 3 = etiqueta amarilla en negritas, 4 = subtítulo chico. Imagen: escribe "/subir" o usa el "+"; selecciónala y alinéala con el botón de alineación; el lápiz sobre ella cambia el ancho.
+             */
+            content?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'text';
+          }
+        | {
+            device?: ('laptop' | 'tablet' | 'phone') | null;
+            /**
+             * Pasan por la pantalla al hacer scroll, una debajo de otra en este orden. Sirve una captura de página completa o varias (para celular, capturas de celular).
+             */
+            images?:
+              | {
+                  image: string | Media;
+                  /**
+                   * Vacío = se usa el de la imagen en Archivos. Llénalo para describirla en este proyecto o en otro idioma.
+                   */
+                  alt?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'device';
+          }
+        | {
+            layout?: ('slider' | 'masonry') | null;
+            /**
+             * En celular se ajusta para no salirse de la pantalla.
+             */
+            height?: ('sm' | 'md' | 'lg' | 'xl') | null;
+            /**
+             * Se muestran en este orden. Arrastra para reordenar.
+             */
+            images?:
+              | {
+                  image: string | Media;
+                  /**
+                   * Vacío = se usa el de la imagen en Archivos. Llénalo para describirla en este proyecto o en otro idioma.
+                   */
+                  alt?: string | null;
+                  /**
+                   * Describe el proyecto en esta foto. En mosaico aparece debajo de la imagen al ampliarla.
+                   */
+                  caption?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'gallery';
+          }
+      )[]
     | null;
   /**
    * Si escribes un texto, la tarjeta lo muestra sobre el color de fondo en lugar de la miniatura. Frases cortas (unas 8 palabras) se leen mejor. Enter = nueva línea.
@@ -489,26 +520,55 @@ export interface ProjectsSelect<T extends boolean = true> {
               id?: T;
             };
         bannerImage?: T;
-        bannerHeight?: T;
-        description?: T;
       };
-  device?: T;
-  deviceImages?:
+  sections?:
     | T
     | {
-        image?: T;
-        alt?: T;
-        id?: T;
-      };
-  galleryLayout?: T;
-  galleryHeight?: T;
-  gallery?:
-    | T
-    | {
-        image?: T;
-        alt?: T;
-        caption?: T;
-        id?: T;
+        image?:
+          | T
+          | {
+              image?: T;
+              height?: T;
+              id?: T;
+              blockName?: T;
+            };
+        text?:
+          | T
+          | {
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        device?:
+          | T
+          | {
+              device?: T;
+              images?:
+                | T
+                | {
+                    image?: T;
+                    alt?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        gallery?:
+          | T
+          | {
+              layout?: T;
+              height?: T;
+              images?:
+                | T
+                | {
+                    image?: T;
+                    alt?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
       };
   cardText?:
     | T

@@ -1,4 +1,5 @@
 import { ArrayRowLabel as ArrayRowLabel_e26ba17c7eaf46b22cd92e445229d684 } from '../../../components/ArrayRowLabel'
+import { SectionRowLabel as SectionRowLabel_b16b65952e3b89160ee901c51cda0117 } from '../../../components/SectionRowLabel'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -32,6 +33,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/components/ArrayRowLabel#ArrayRowLabel": ArrayRowLabel_e26ba17c7eaf46b22cd92e445229d684,
+  "/components/SectionRowLabel#SectionRowLabel": SectionRowLabel_b16b65952e3b89160ee901c51cda0117,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,

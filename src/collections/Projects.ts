@@ -9,26 +9,17 @@ import {
 import { DESCRIPTION, TITLE } from '../seo/projectSeo'
 import { revalidateWebsiteAfterChange, revalidateWebsiteAfterDelete } from '../hooks/revalidateWebsite'
 import { websiteURL } from '../websiteURL'
-import { TextStylesFeature } from '../components/admin/textStyles'
 import {
   AlignFeature,
-  BlockquoteFeature,
   BoldFeature,
   FixedToolbarFeature,
-  HeadingFeature,
-  HorizontalRuleFeature,
-  IndentFeature,
   InlineToolbarFeature,
   ItalicFeature,
-  LinkFeature,
-  OrderedListFeature,
   ParagraphFeature,
-  StrikethroughFeature,
-  UploadFeature,
   UnderlineFeature,
-  UnorderedListFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+import { DEFAULT_SECTIONS, deviceBlock, galleryBlock, imageBlock, textBlock } from './projectSections'
 
 /** "#D0DF00": la web lo pone tal cual en el CSS, así que solo hex de 6 dígitos */
 const hexColor: Validate = (value) =>
@@ -173,7 +164,7 @@ export const Projects: CollectionConfig = {
           fields: [
             {
               type: 'collapsible',
-              label: '1 · Arriba: logo, título, servicios e imagen',
+              label: '1 · Arriba: logo, título, servicios y portada',
               admin: { description: 'El título se edita en el campo de hasta arriba.' },
               fields: [
                 {
@@ -269,83 +260,136 @@ export const Projects: CollectionConfig = {
                     {
                       name: 'bannerImage',
                       type: 'upload',
-                      label: 'Imagen Principal',
+                      label: 'Imagen de portada',
                       relationTo: 'media',
                       // Opcional: al ser obligatoria, los proyectos sin fotos todavía
                       // reciclaban la de Elite y el portafolio la repetía en todas las
                       // tarjetas. Vacía, el sitio muestra el placeholder "Proyecto Aurin".
                       admin: {
                         description:
-                          'Imagen grande de portada. También se usa al compartir el enlace. Si el proyecto aún no tiene fotos, déjala vacía: no reutilices la de otro proyecto.',
+                          'La de las tarjetas del portafolio y al compartir el enlace. En la página sale donde pongas una sección Imagen sin imagen propia. Si el proyecto aún no tiene fotos, déjala vacía: no reutilices la de otro proyecto.',
                       },
                     },
+                  ],
+                },
+              ],
+            },
+            {
+              name: 'sections',
+              type: 'blocks',
+              label: '2 · Secciones (debajo del título)',
+              labels: { singular: 'Sección', plural: 'Secciones' },
+              // La base de siempre; en los proyectos de antes la arma la migración project_sections
+              defaultValue: DEFAULT_SECTIONS,
+              admin: {
+                description:
+                  'Se muestran en este orden. Arrastra para moverlas, usa los tres puntos para duplicar o quitar, y "Añadir Sección" para sumar otra Imagen, Texto, Dispositivo o Galería. Una sección vacía no se muestra.',
+                // Línea debajo de "Añadir Sección" (custom.scss): marca dónde terminan las secciones
+                className: 'aurin-sections',
+              },
+              blocks: [imageBlock, textBlock, deviceBlock, galleryBlock],
+            },
+          ],
+        },
+        {
+          label: 'Tarjeta',
+          description: 'Cómo se ve el proyecto en "Historias que hablan por sí solas" y en el portafolio. No cambia la página del proyecto.',
+          fields: [
+            {
+              name: 'cardText',
+              type: 'group',
+              label: 'Texto de la tarjeta',
+              admin: {
+                description:
+                  'Si escribes un texto, la tarjeta lo muestra sobre el color de fondo en lugar de la miniatura. Frases cortas (unas 8 palabras) se leen mejor. Enter = nueva línea.',
+              },
+              fields: [
+                {
+                  name: 'text',
+                  type: 'richText',
+                  label: 'Texto',
+                  localized: true,
+                  editor: lexicalEditor({
+                    features: [
+                      ParagraphFeature(),
+                      BoldFeature(),
+                      ItalicFeature(),
+                      UnderlineFeature(),
+                      AlignFeature(),
+                      FixedToolbarFeature(),
+                      InlineToolbarFeature(),
+                    ],
+                  }),
+                },
+                {
+                  type: 'row',
+                  fields: [
                     {
-                      name: 'bannerHeight',
+                      name: 'font',
                       type: 'select',
-                      label: 'Alto de la imagen principal',
+                      label: 'Tipografía',
+                      defaultValue: 'display',
+                      options: [
+                        { label: 'Titillium Web (títulos)', value: 'display' },
+                        { label: 'Clarity City (texto)', value: 'body' },
+                      ],
+                      admin: { width: '33%' },
+                    },
+                    {
+                      name: 'weight',
+                      type: 'select',
+                      label: 'Grosor',
+                      defaultValue: '600',
+                      options: [
+                        { label: 'Normal', value: '400' },
+                        { label: 'Seminegrita', value: '600' },
+                        { label: 'Negrita', value: '700' },
+                      ],
+                      admin: { width: '33%' },
+                    },
+                    {
+                      name: 'size',
+                      type: 'select',
+                      label: 'Tamaño',
                       defaultValue: 'md',
                       options: [
-                        { label: 'Bajo', value: 'sm' },
-                        { label: 'Normal', value: 'md' },
-                        { label: 'Alto', value: 'lg' },
-                        { label: 'Extra alto', value: 'xl' },
+                        { label: 'Chico', value: 'sm' },
+                        { label: 'Mediano', value: 'md' },
+                        { label: 'Grande', value: 'lg' },
+                        { label: 'Extra grande', value: 'xl' },
                       ],
-                      admin: { description: 'La imagen se recorta para llenar el alto; en celular y tablet escala en proporción.' },
+                      admin: {
+                        width: '33%',
+                        description: 'Crece y se encoge con la tarjeta: se ve igual en celular y en computadora.',
+                      },
+                    },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'background',
+                      type: 'text',
+                      label: 'Color de fondo',
+                      defaultValue: '#D0DF00',
+                      validate: hexColor,
+                      admin: {
+                        width: '50%',
+                        placeholder: '#D0DF00',
+                        components: { Field: '/components/admin/ColorField#ColorField' },
+                      },
                     },
                     {
-                      name: 'description',
-                      type: 'richText',
-                      label: '2 · Texto (debajo de la imagen principal)',
-                      required: true,
-                      localized: true,
-                      // Solo los formatos que la web sabe dibujar (renderRichText* en AurinWebsite/src/lib/payload.ts)
-                      editor: lexicalEditor({
-                        features: [
-                          ParagraphFeature(),
-                          HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                          BoldFeature(),
-                          ItalicFeature(),
-                          UnderlineFeature(),
-                          StrikethroughFeature(),
-                          TextStylesFeature(),
-                          AlignFeature(),
-                          IndentFeature(),
-                          UnorderedListFeature(),
-                          OrderedListFeature(),
-                          BlockquoteFeature(),
-                          HorizontalRuleFeature(),
-                          // Imagen dentro del texto: el lápiz sobre la imagen abre "Ancho"; la
-                          // alineación es la de la barra (izquierda/centro/derecha), como en Docs
-                          UploadFeature({
-                            collections: {
-                              media: {
-                                fields: [
-                                  {
-                                    name: 'width',
-                                    type: 'select',
-                                    label: 'Ancho',
-                                    defaultValue: 'md',
-                                    options: [
-                                      { label: 'Pequeña (1/3 del texto)', value: 'sm' },
-                                      { label: 'Mediana (1/2)', value: 'md' },
-                                      { label: 'Grande (3/4)', value: 'lg' },
-                                      { label: 'Completa', value: 'full' },
-                                    ],
-                                  },
-                                ],
-                              },
-                            },
-                          }),
-                          LinkFeature(),
-                          // Orden como en Google Docs: estilo, letra, B I U, color | alineación
-                          FixedToolbarFeature({ customGroups: { align: { order: 45 }, indent: { order: 46 } } }),
-                          InlineToolbarFeature(),
-                        ],
-                      }),
+                      name: 'color',
+                      type: 'text',
+                      label: 'Color del texto',
+                      defaultValue: '#0A0A0A',
+                      validate: hexColor,
                       admin: {
-                        className: 'aurin-texto',
-                        description:
-                          'Selecciona cualquier palabra y cámbiale Tipografía, Tamaño, Grosor, Color o Resaltado con los menús de la barra (también salen en la barrita que aparece al seleccionar). Estilos de bloque: si empieza con "Encabezado 2" es el título grande en dos tonos; más abajo, Encabezado 1 = título gigante blanco, 2 = subtítulo amarillo, 3 = etiqueta amarilla en negritas, 4 = subtítulo chico. Imagen: escribe "/subir" o usa el "+"; selecciónala y alinéala con el botón de alineación; el lápiz sobre ella cambia el ancho.',
+                        width: '50%',
+                        placeholder: '#0A0A0A',
+                        components: { Field: '/components/admin/ColorField#ColorField' },
                       },
                     },
                   ],
@@ -353,250 +397,14 @@ export const Projects: CollectionConfig = {
               ],
             },
             {
-              type: 'collapsible',
-              label: '3 · Dispositivo (antes de la galería)',
-              fields: [
-                {
-                  name: 'device',
-                  type: 'radio',
-                  label: 'Dispositivo',
-                  defaultValue: 'laptop',
-                  options: [
-                    { label: 'Laptop', value: 'laptop' },
-                    { label: 'Tablet', value: 'tablet' },
-                    { label: 'Celular', value: 'phone' },
-                  ],
-                  admin: { layout: 'horizontal' },
-                },
-                {
-                  name: 'deviceImages',
-                  type: 'array',
-                  label: 'Imágenes en la pantalla',
-                  labels: { singular: 'Imagen', plural: 'Imágenes' },
-                  // Vacía, la página no muestra el dispositivo
-                  admin: {
-                    description:
-                      'Pasan por la pantalla al hacer scroll, una debajo de otra en este orden. Sirve una captura de página completa o varias (para celular, capturas de celular). Vacío = no se muestra.',
-                    initCollapsed: true,
-                    components: {
-                      RowLabel: { path: '/components/ArrayRowLabel#ArrayRowLabel', clientProps: { fallback: 'Imagen' } },
-                    },
-                  },
-                  fields: [
-                    {
-                      name: 'image',
-                      type: 'upload',
-                      label: 'Imagen',
-                      relationTo: 'media',
-                      required: true,
-                    },
-                    {
-                      name: 'alt',
-                      type: 'text',
-                      label: 'Texto Alternativo (opcional)',
-                      localized: true,
-                      admin: {
-                        description: 'Vacío = se usa el de la imagen en Archivos. Llénalo para describirla en este proyecto o en otro idioma.',
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              type: 'collapsible',
-              label: '4 · Galería de imágenes (al final)',
-              fields: [
-                {
-                  name: 'galleryLayout',
-                  type: 'radio',
-                  label: 'Cómo se muestran',
-                  defaultValue: 'slider',
-                  options: [
-                    { label: 'Slider', value: 'slider' },
-                    { label: 'Mosaico', value: 'masonry' },
-                  ],
-                  admin: {
-                    components: { Field: '/components/admin/GalleryLayoutField#GalleryLayoutField' },
-                  },
-                },
-                {
-                  name: 'galleryHeight',
-                  type: 'select',
-                  label: 'Alto de las imágenes',
-                  defaultValue: 'md',
-                  options: [
-                    { label: 'Bajo', value: 'sm' },
-                    { label: 'Normal', value: 'md' },
-                    { label: 'Alto', value: 'lg' },
-                    { label: 'Extra alto', value: 'xl' },
-                  ],
-                  admin: {
-                    description: 'En celular se ajusta para no salirse de la pantalla.',
-                    // Solo el slider tiene alto fijo; en mosaico cada foto va en su proporción
-                    condition: (_, siblingData) => siblingData?.galleryLayout !== 'masonry',
-                  },
-                },
-                {
-                  name: 'gallery',
-                  type: 'array',
-                  label: 'Imágenes',
-                  labels: { singular: 'Imagen', plural: 'Imágenes' },
-                  // Sin mínimo: con `minRows: 1` un proyecto sin fotos tenía que tomar
-                  // prestada la de otro. Vacía, la página no muestra galería.
-                  admin: {
-                    description: 'Se muestran en este orden. Arrastra para reordenar.',
-                    initCollapsed: true,
-                    components: {
-                      RowLabel: { path: '/components/ArrayRowLabel#ArrayRowLabel', clientProps: { fallback: 'Imagen' } },
-                    },
-                  },
-                  fields: [
-                    {
-                      name: 'image',
-                      type: 'upload',
-                      label: 'Imagen',
-                      relationTo: 'media',
-                      required: true,
-                    },
-                    {
-                      name: 'alt',
-                      type: 'text',
-                      label: 'Texto Alternativo (opcional)',
-                      localized: true,
-                      admin: {
-                        description: 'Vacío = se usa el de la imagen en Archivos. Llénalo para describirla en este proyecto o en otro idioma.',
-                      },
-                    },
-                    {
-                      name: 'caption',
-                      type: 'text',
-                      label: 'Texto sobre la imagen (opcional)',
-                      localized: true,
-                      admin: {
-                        description: 'Describe el proyecto en esta foto. En mosaico aparece debajo de la imagen al ampliarla.',
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              type: 'collapsible',
-              label: '5 · Tarjeta (en "Historias que hablan por sí solas" y el portafolio)',
-              fields: [
-                {
-                  name: 'cardText',
-                  type: 'group',
-                  label: 'Texto de la tarjeta',
-                  admin: {
-                    description:
-                      'Si escribes un texto, la tarjeta lo muestra sobre el color de fondo en lugar de la miniatura. Frases cortas (unas 8 palabras) se leen mejor. Enter = nueva línea.',
-                  },
-                  fields: [
-                    {
-                      name: 'text',
-                      type: 'richText',
-                      label: 'Texto',
-                      localized: true,
-                      editor: lexicalEditor({
-                        features: [
-                          ParagraphFeature(),
-                          BoldFeature(),
-                          ItalicFeature(),
-                          UnderlineFeature(),
-                          AlignFeature(),
-                          FixedToolbarFeature(),
-                          InlineToolbarFeature(),
-                        ],
-                      }),
-                    },
-                    {
-                      type: 'row',
-                      fields: [
-                        {
-                          name: 'font',
-                          type: 'select',
-                          label: 'Tipografía',
-                          defaultValue: 'display',
-                          options: [
-                            { label: 'Titillium Web (títulos)', value: 'display' },
-                            { label: 'Clarity City (texto)', value: 'body' },
-                          ],
-                          admin: { width: '33%' },
-                        },
-                        {
-                          name: 'weight',
-                          type: 'select',
-                          label: 'Grosor',
-                          defaultValue: '600',
-                          options: [
-                            { label: 'Normal', value: '400' },
-                            { label: 'Seminegrita', value: '600' },
-                            { label: 'Negrita', value: '700' },
-                          ],
-                          admin: { width: '33%' },
-                        },
-                        {
-                          name: 'size',
-                          type: 'select',
-                          label: 'Tamaño',
-                          defaultValue: 'md',
-                          options: [
-                            { label: 'Chico', value: 'sm' },
-                            { label: 'Mediano', value: 'md' },
-                            { label: 'Grande', value: 'lg' },
-                            { label: 'Extra grande', value: 'xl' },
-                          ],
-                          admin: {
-                            width: '33%',
-                            description: 'Crece y se encoge con la tarjeta: se ve igual en celular y en computadora.',
-                          },
-                        },
-                      ],
-                    },
-                    {
-                      type: 'row',
-                      fields: [
-                        {
-                          name: 'background',
-                          type: 'text',
-                          label: 'Color de fondo',
-                          defaultValue: '#D0DF00',
-                          validate: hexColor,
-                          admin: {
-                            width: '50%',
-                            placeholder: '#D0DF00',
-                            components: { Field: '/components/admin/ColorField#ColorField' },
-                          },
-                        },
-                        {
-                          name: 'color',
-                          type: 'text',
-                          label: 'Color del texto',
-                          defaultValue: '#0A0A0A',
-                          validate: hexColor,
-                          admin: {
-                            width: '50%',
-                            placeholder: '#0A0A0A',
-                            components: { Field: '/components/admin/ColorField#ColorField' },
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  name: 'thumbnail',
-                  type: 'upload',
-                  label: 'Miniatura',
-                  relationTo: 'media',
-                  admin: {
-                    description:
-                      'Imagen cuadrada (1:1), mínimo 800 × 800 px. Vacía = se recorta la imagen principal. Si hay texto de la tarjeta, se muestra el texto.',
-                  },
-                },
-              ],
+              name: 'thumbnail',
+              type: 'upload',
+              label: 'Miniatura',
+              relationTo: 'media',
+              admin: {
+                description:
+                  'Imagen cuadrada (1:1), mínimo 800 × 800 px. Vacía = se recorta la imagen principal. Si hay texto de la tarjeta, se muestra el texto.',
+              },
             },
           ],
         },
@@ -694,41 +502,6 @@ export const Projects: CollectionConfig = {
           })
           if (data.slug === es?.slug && slugify(data.title) !== es.slug) data.slug = slugify(data.title)
         }
-        return data
-      },
-    ],
-    beforeChange: [
-      ({ data }) => {
-        // Convert plain text to Lexical format for hero.description
-        if (data.hero?.description && typeof data.hero.description === 'string') {
-          const paragraphs = data.hero.description.split('\n\n').filter((p: string) => p.trim())
-          data.hero.description = {
-            root: {
-              type: 'root',
-              format: '',
-              indent: 0,
-              version: 1,
-              children: paragraphs.map((text: string) => ({
-                type: 'paragraph',
-                format: '',
-                indent: 0,
-                version: 1,
-                children: [{
-                  type: 'text',
-                  format: 0,
-                  text: text.replace(/\n/g, ' '),
-                  version: 1,
-                  mode: 'normal',
-                  style: '',
-                  detail: 0,
-                }],
-                direction: 'ltr',
-              })),
-              direction: 'ltr',
-            },
-          }
-        }
-
         return data
       },
     ],
