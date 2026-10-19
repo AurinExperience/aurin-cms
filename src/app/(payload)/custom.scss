@@ -194,3 +194,62 @@ div.nav__link {
   min-width: 0;
   max-width: 260px;
 }
+
+// "Cómo se muestran" la galería (GalleryLayoutField): tarjetas con dibujo, la elegida en amarillo
+.aurin-layout-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 560px;
+  margin-block: 8px;
+}
+
+.aurin-layout-option {
+  // Dibujo chico a la izquierda; nombre y explicación a la derecha
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m);
+  background: var(--theme-elevation-50);
+  color: var(--theme-elevation-500);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+
+  svg {
+    grid-row: span 2;
+    width: 44px;
+    height: 24px;
+  }
+
+  strong {
+    align-self: end;
+    color: var(--theme-text);
+    font-size: 13px;
+  }
+
+  span {
+    align-self: start;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  &:hover {
+    border-color: var(--theme-elevation-400);
+  }
+
+  &[aria-checked='true'] {
+    border-color: var(--aurin-yellow);
+    box-shadow: 0 0 0 1px var(--aurin-yellow);
+    color: var(--aurin-yellow);
+  }
+
+  &[aria-checked='true'] span {
+    color: var(--theme-elevation-600);
+  }
+}

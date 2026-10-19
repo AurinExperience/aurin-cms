@@ -191,6 +191,7 @@ export interface Project {
       [k: string]: unknown;
     };
   };
+  galleryLayout?: ('slider' | 'masonry') | null;
   /**
    * En celular se ajusta para no salirse de la pantalla.
    */
@@ -206,7 +207,7 @@ export interface Project {
          */
         alt?: string | null;
         /**
-         * Actualmente no se muestra en la web.
+         * Describe el proyecto en esta foto. En mosaico aparece debajo de la imagen al ampliarla.
          */
         caption?: string | null;
         id?: string | null;
@@ -477,6 +478,7 @@ export interface ProjectsSelect<T extends boolean = true> {
         bannerHeight?: T;
         description?: T;
       };
+  galleryLayout?: T;
   galleryHeight?: T;
   gallery?:
     | T
