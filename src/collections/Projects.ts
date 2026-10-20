@@ -87,19 +87,6 @@ export const Projects: CollectionConfig = {
       localized: true,
     },
     {
-      name: 'slug',
-      type: 'text',
-      label: 'URL Slug',
-      required: true,
-      unique: true,
-      // Uno por idioma: /project/orquesta-sinfonica y /en/project/symphony-orchestra
-      localized: true,
-      admin: {
-        position: 'sidebar',
-        description: 'La URL en el idioma que tienes elegido arriba a la derecha (Locale). Para la de inglés, cambia a English. Vacío = se genera del título.',
-      },
-    },
-    {
       name: 'status',
       type: 'select',
       label: 'Estado',
@@ -406,6 +393,24 @@ export const Projects: CollectionConfig = {
               admin: {
                 description:
                   'Imagen cuadrada (1:1), mínimo 800 × 800 px. Vacía = se recorta la imagen principal. Si hay texto de la tarjeta, se muestra el texto.',
+              },
+            },
+          ],
+        },
+        {
+          label: 'URL',
+          description: 'La dirección de la página: aurin.mx/project/… (en inglés, aurin.mx/en/project/…).',
+          fields: [
+            {
+              name: 'slug',
+              type: 'text',
+              label: 'URL Slug',
+              required: true,
+              unique: true,
+              // Uno por idioma: /project/orquesta-sinfonica y /en/project/symphony-orchestra
+              localized: true,
+              admin: {
+                description: 'La URL en el idioma que tienes elegido arriba a la derecha (Locale). Para la de inglés, cambia a English. Vacío = se genera del título.',
               },
             },
           ],
