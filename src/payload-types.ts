@@ -130,10 +130,6 @@ export interface UserAuthOperations {
 export interface Project {
   id: string;
   title: string;
-  /**
-   * La URL en el idioma que tienes elegido arriba a la derecha (Locale). Para la de inglés, cambia a English. Vacío = se genera del título.
-   */
-  slug: string;
   status: 'draft' | 'published' | 'archived';
   featured?: boolean | null;
   publishDate: string;
@@ -213,7 +209,11 @@ export interface Project {
         | {
             device?: ('laptop' | 'tablet' | 'phone') | null;
             /**
-             * Pasan por la pantalla al hacer scroll, una debajo de otra en este orden. Sirve una captura de página completa o varias (para celular, capturas de celular).
+             * A los lados, cada captura llena la pantalla y se detiene un momento antes de pasar a la siguiente.
+             */
+            direction?: ('vertical' | 'horizontal') | null;
+            /**
+             * Pasan por la pantalla al hacer scroll, en este orden. Hacia arriba sirve una captura de página completa o varias; a los lados, una por pantalla (para celular, capturas de celular).
              */
             images?:
               | {
@@ -290,6 +290,10 @@ export interface Project {
    * Imagen cuadrada (1:1), mínimo 800 × 800 px. Vacía = se recorta la imagen principal. Si hay texto de la tarjeta, se muestra el texto.
    */
   thumbnail?: (string | null) | Media;
+  /**
+   * La URL en el idioma que tienes elegido arriba a la derecha (Locale). Para la de inglés, cambia a English. Vacío = se genera del título.
+   */
+  slug: string;
   seo?: {
     /**
      * Ideal 50–60 caracteres. "Auto-generar" lo arma con el nombre y el servicio principal.
@@ -496,7 +500,6 @@ export interface PayloadMigration {
  */
 export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
-  slug?: T;
   status?: T;
   featured?: T;
   publishDate?: T;
@@ -543,6 +546,7 @@ export interface ProjectsSelect<T extends boolean = true> {
           | T
           | {
               device?: T;
+              direction?: T;
               images?:
                 | T
                 | {
@@ -581,6 +585,7 @@ export interface ProjectsSelect<T extends boolean = true> {
         color?: T;
       };
   thumbnail?: T;
+  slug?: T;
   seo?:
     | T
     | {
