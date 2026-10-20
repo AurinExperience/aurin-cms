@@ -286,6 +286,8 @@ export const Projects: CollectionConfig = {
                   'Se muestran en este orden. Arrastra para moverlas, usa los tres puntos para duplicar o quitar, y "Añadir Sección" para sumar otra Imagen, Texto, Dispositivo o Galería. Una sección vacía no se muestra.',
                 // Línea debajo de "Añadir Sección" (custom.scss): marca dónde terminan las secciones
                 className: 'aurin-sections',
+                // Contraídas: se lee la lista por sus títulos y se abre la que se va a editar
+                initCollapsed: true,
               },
               blocks: [imageBlock, textBlock, deviceBlock, galleryBlock],
             },
