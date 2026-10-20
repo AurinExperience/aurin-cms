@@ -177,8 +177,22 @@ export const deviceBlock: Block = {
       ],
       admin: { layout: 'horizontal' },
     },
+    {
+      name: 'direction',
+      type: 'radio',
+      label: 'Hacia dónde pasan las capturas',
+      defaultValue: 'vertical',
+      options: [
+        { label: 'Hacia arriba (una página larga)', value: 'vertical' },
+        { label: 'A los lados (una pantalla por captura)', value: 'horizontal' },
+      ],
+      admin: {
+        layout: 'horizontal',
+        description: 'A los lados, cada captura llena la pantalla y se detiene un momento antes de pasar a la siguiente.',
+      },
+    },
     imageRows(
-      'Pasan por la pantalla al hacer scroll, una debajo de otra en este orden. Sirve una captura de página completa o varias (para celular, capturas de celular).',
+      'Pasan por la pantalla al hacer scroll, en este orden. Hacia arriba sirve una captura de página completa o varias; a los lados, una por pantalla (para celular, capturas de celular).',
     ),
   ],
 }
@@ -223,6 +237,6 @@ export const galleryBlock: Block = {
 export const DEFAULT_SECTIONS = [
   { blockType: 'image', height: 'md' },
   { blockType: 'text' },
-  { blockType: 'device', device: 'laptop' },
+  { blockType: 'device', device: 'laptop', direction: 'vertical' },
   { blockType: 'gallery', layout: 'slider', height: 'md' },
 ]

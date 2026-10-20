@@ -31,7 +31,7 @@ export const SectionRowLabel = () => {
       break
     case 'device': {
       const n = count(data.images)
-      label = `${DEVICE[data.device] ?? 'Laptop'} · ${n ? plural(n, 'captura', 'capturas') : `sin capturas${empty}`}`
+      label = `${DEVICE[data.device] ?? 'Laptop'}${data.direction === 'horizontal' ? ' a los lados' : ''} · ${n ? plural(n, 'captura', 'capturas') : `sin capturas${empty}`}`
       break
     }
     case 'gallery': {
