@@ -1,11 +1,12 @@
+import Link from 'next/link'
 import { websiteURL } from '../../websiteURL'
 
 // Arriba del menú: volver al panel y abrir el sitio público
 export const NavLinks = () => (
   <div className="aurin-nav-top">
-    <a className="nav__link" id="nav-dashboard" href="/admin">
+    <Link className="nav__link" id="nav-dashboard" href="/admin">
       <span className="nav__link-label">Panel de control</span>
-    </a>
+    </Link>
     <a
       className="nav__link"
       id="nav-site"
