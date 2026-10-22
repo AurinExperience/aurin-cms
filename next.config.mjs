@@ -4,6 +4,8 @@ import { withPayload } from '@payloadcms/next/withPayload'
 const nextConfig = {
   // Vercel lo da al compilar; el admin lo usa para notar que hubo otro deploy (NewVersionNotice)
   env: { NEXT_PUBLIC_DEPLOYMENT_ID: process.env.VERCEL_DEPLOYMENT_ID ?? '' },
+  // Solo el Dockerfile lo pide (server.js autocontenido); en Vercel queda sin definir
+  output: process.env.NEXT_OUTPUT,
   // Este proyecto solo sirve el admin y la API: la raíz manda al admin
   async redirects() {
     return [{ source: '/', destination: '/admin', permanent: false }]
