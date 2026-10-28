@@ -3,7 +3,8 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, PayloadReque
 
 // Avisa a la web (AurinWebsite /api/revalidate) que borre su caché del CDN, para que
 // el cambio se vea al instante. Nunca bloquea el guardado: si falla, la web se
-// actualiza sola en ~1 min (s-maxage=60). Sin REVALIDATE_SECRET no hace nada.
+// actualiza sola en máximo 1 día (s-maxage=86400). Sin REVALIDATE_SECRET no hace nada.
+// Va en toda colección que la web muestre (proyectos, media, categorías, etiquetas).
 const purgeWebsiteCache = async (req: PayloadRequest) => {
   const secret = process.env.REVALIDATE_SECRET
   if (!secret) return

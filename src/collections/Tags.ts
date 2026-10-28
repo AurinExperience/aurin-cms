@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { revalidateWebsiteAfterChange, revalidateWebsiteAfterDelete } from '../hooks/revalidateWebsite'
 
 export const Tags: CollectionConfig = {
   slug: 'tags',
@@ -41,5 +42,7 @@ export const Tags: CollectionConfig = {
         return data
       },
     ],
+    afterChange: [revalidateWebsiteAfterChange],
+    afterDelete: [revalidateWebsiteAfterDelete],
   },
 }

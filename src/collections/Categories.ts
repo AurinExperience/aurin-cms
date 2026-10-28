@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { revalidateWebsiteAfterChange, revalidateWebsiteAfterDelete } from '../hooks/revalidateWebsite'
 
 // "Diseño UX/UI" → "diseno-ux-ui"
 const slugify = (text: string) =>
@@ -56,5 +57,7 @@ export const Categories: CollectionConfig = {
         return data
       },
     ],
+    afterChange: [revalidateWebsiteAfterChange],
+    afterDelete: [revalidateWebsiteAfterDelete],
   },
 }
