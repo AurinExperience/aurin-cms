@@ -12,12 +12,17 @@ export const NewVersionNotice = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!loadedDeployment) return
-    const check = () =>
+    // Cada consulta despierta la función de Payload (CPU de Vercel). Una pestaña olvidada
+    // en segundo plano hacía ~1,440 al día: solo se consulta con la pestaña a la vista,
+    // cada 5 min y al volver a ella (focus), que es cuando importa avisar.
+    const check = () => {
+      if (document.visibilityState !== 'visible') return
       fetch('/api/version', { cache: 'no-store' })
         .then((res) => res.json())
         .then(({ deployment }) => setOutdated(Boolean(deployment) && deployment !== loadedDeployment))
         .catch(() => {})
-    const timer = setInterval(check, 60_000)
+    }
+    const timer = setInterval(check, 5 * 60_000)
     window.addEventListener('focus', check)
     return () => {
       clearInterval(timer)
